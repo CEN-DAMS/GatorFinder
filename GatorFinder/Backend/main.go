@@ -26,9 +26,15 @@ func main() {
 						uid INTEGER PRIMARY KEY AUTOINCREMENT,
 						username VARCHAR(64) NULL,
 						eventname VARCHAR(64) NULL,
-						eventdescription VARCHAR(64) NULL,						
-						created DATE NULL
+						eventdescription VARCHAR(64) NULL,
+						created DATE NULL,
+						startDate DATE NULL,
+						endDate DATE NULL,
+						startTime TIME NULL,
+						endTime TIME NULL,
+						image VARCHAR(64) NULL
 	);`
+<<<<<<< HEAD
 	sqlQueryToCreateUserTable :=
 		`
 		   				CREATE TABLE IF NOT EXISTS Users (
@@ -38,8 +44,12 @@ func main() {
 						eventdescription VARCHAR(64) NULL,						
 						created DATE NULL
 	);`
+=======
+	//_, err = db.Exec("DROP TABLE events")
+>>>>>>> 12a2855248529cd18b97c7f30a72303cc957c104
 	_, err = db.Exec(sqlQueryToCreateTable)
 	_, err = db.Exec(sqlQueryToCreateUserTable)
+
 
 	if err != nil {
 		log.Fatal(err)

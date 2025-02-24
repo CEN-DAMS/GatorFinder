@@ -48,7 +48,7 @@ func AddEvent(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	// Prepare SQL statement
-	stmt, err := db.Prepare("INSERT INTO events(username, eventname, eventdescription, created) VALUES (?, ?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO events(username, eventname, eventdescription, created, startDate, endDate, startTime, endTime, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		http.Error(w, "Failed to prepare SQL statement", http.StatusInternalServerError)
 		return
@@ -56,7 +56,7 @@ func AddEvent(w http.ResponseWriter, r *http.Request) {
 	defer stmt.Close()
 
 	// Execute the statement with values from the request
-	_, err = stmt.Exec(event.User, event.EventName, event.EventDescription, event.Date)
+	_, err = stmt.Exec(event.User, event.EventName, event.EventDescription, event.DatePosted, event.StartDate, event.EndDate, event.StartTime, event.EndTime, event.ImageURL)
 	if err != nil {
 		http.Error(w, "Failed to insert event", http.StatusInternalServerError)
 		return
