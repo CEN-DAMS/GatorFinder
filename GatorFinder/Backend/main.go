@@ -29,7 +29,17 @@ func main() {
 						eventdescription VARCHAR(64) NULL,						
 						created DATE NULL
 	);`
+	sqlQueryToCreateUserTable :=
+		`
+		   				CREATE TABLE IF NOT EXISTS Users (
+						uid INTEGER PRIMARY KEY AUTOINCREMENT,
+						username VARCHAR(64) NULL,
+						eventname VARCHAR(64) NULL,
+						eventdescription VARCHAR(64) NULL,						
+						created DATE NULL
+	);`
 	_, err = db.Exec(sqlQueryToCreateTable)
+	_, err = db.Exec(sqlQueryToCreateUserTable)
 
 	if err != nil {
 		log.Fatal(err)
