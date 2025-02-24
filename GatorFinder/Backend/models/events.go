@@ -6,5 +6,10 @@ type Event struct {
 	User             string `json:"username"`
 	EventName        string `json:"name"`
 	EventDescription string `json:"description"`
-	Date             string `json:"date"`
+	DatePosted             string `json:"datePosted"`
+	StartDate             string `json:"startDate"`
+	EndDate             string `json:"endDate"`
+	StartTime             string `json:"startTime"`
+	EndTime             string `json:"endTime"`
+	ImageURL string `json:"image"`
 }

@@ -112,16 +112,31 @@ const docTemplate = `{
         "models.Event": {
             "type": "object",
             "properties": {
-                "date": {
+                "datePosted": {
                     "type": "string"
                 },
                 "description": {
                     "type": "string"
                 },
+                "endDate": {
+                    "type": "string"
+                },
+                "endTime": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "string"
                 },
+                "image": {
+                    "type": "string"
+                },
                 "name": {
+                    "type": "string"
+                },
+                "startDate": {
+                    "type": "string"
+                },
+                "startTime": {
                     "type": "string"
                 },
                 "username": {
