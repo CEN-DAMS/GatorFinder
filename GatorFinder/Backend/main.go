@@ -34,19 +34,16 @@ func main() {
 						endTime TIME NULL,
 						image VARCHAR(64) NULL
 	);`
-<<<<<<< HEAD
 	sqlQueryToCreateUserTable :=
 		`
 		   				CREATE TABLE IF NOT EXISTS Users (
 						uid INTEGER PRIMARY KEY AUTOINCREMENT,
-						username VARCHAR(64) NULL,
-						eventname VARCHAR(64) NULL,
-						eventdescription VARCHAR(64) NULL,						
-						created DATE NULL
+						username VARCHAR(64) UNIQUE,
+						email VARCHAR(64) NULL,
+						password VARCHAR(64) NULL
 	);`
-=======
 	//_, err = db.Exec("DROP TABLE events")
->>>>>>> 12a2855248529cd18b97c7f30a72303cc957c104
+	//_, err = db.Exec("DROP TABLE Users")
 	_, err = db.Exec(sqlQueryToCreateTable)
 	_, err = db.Exec(sqlQueryToCreateUserTable)
 
@@ -68,6 +65,7 @@ func StartServer() {
 
 	// Register API Routes
 	routes.RegisterEventRoutes(router)
+	routes.RegisterUserRoutes(router)
 
 	// Swagger UI route
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
