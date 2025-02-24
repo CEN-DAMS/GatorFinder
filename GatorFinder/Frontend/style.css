@@ -1,0 +1,94 @@
+body {
+    font-family: 'Future', sans-serif;
+    background-color: #575555; 
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+header {
+    width: 100%;
+    display: flex;
+    justify-content: center; 
+    align-items: center;
+    padding: 10px 20px;
+    background-color: #e98001; 
+    position: relative;
+}
+
+.logo {
+    position: absolute;
+    left: 30px; 
+    font-size: 24px;
+    font-family: Andale Mono, monospace;
+    font-weight: bold;
+    color: white;
+}
+
+.search-bar {
+    width: 50%;
+    max-width: 600px;
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+.search-bar input {
+    width: 100%;
+    padding: 10px 40px 10px 10px;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.search-bar .icon {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: gray;
+    font-size: 18px;
+    pointer-events: none;
+}
+
+main {
+    width: 100%;
+    max-width: 800px;
+    padding: 20px;
+}
+
+.feed {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.post {
+    background: rgb(255, 255, 255);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.post img {
+    width: 100%;
+    height: auto;
+}
+
+.post-content {
+    padding: 15px;
+}
+
+.post-content h3 {
+    margin: 0 0 10px;
+    font-size: 20px;
+    color: #333;
+}
+
+.post-content p {
+    margin: 0;
+    font-size: 16px;
+    color: #000000;
+}

@@ -1,2 +1,67 @@
 <!DOCTYPE html>
-<h1>Test Commit</h1>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GatorFinder</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+
+    <header>
+        <div class="logo">GatorFinder</div>
+    </header>
+
+    <main>
+        <div class="search-container">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="Search...">
+                <span class="icon"><i class="fas fa-search"></i></span>
+            </div>
+        </div>
+
+        <div class="feed" id="feed">
+            <div class="post">
+                <div class="post-content">
+                    <h3>Event 1</h3>
+                    <p>Event 1 Description</p>
+                </div>
+            </div>
+
+            <div class="post">
+                <div class="post-content">
+                    <h3>Event 2</h3>
+                    <p>Event 2 Description</p>
+                </div>
+            </div>
+
+            <div class="post">
+                <div class="post-content">
+                    <h3>Event 3</h3>
+                    <p>Event 3 Description</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        document.getElementById("searchInput").addEventListener("input", function() {
+            let filter = this.value.toLowerCase();
+            let posts = document.querySelectorAll(".post");
+
+            posts.forEach(post => {
+                let title = post.querySelector("h3").textContent.toLowerCase();
+                let description = post.querySelector("p").textContent.toLowerCase();
+                
+                if (title.includes(filter) || description.includes(filter)) {
+                    post.style.display = "block";
+                } else {
+                    post.style.display = "none";
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
