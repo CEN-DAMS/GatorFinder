@@ -48,12 +48,16 @@ func main() {
 	//_, err = db.Exec("DROP TABLE events")
 	//_, err = db.Exec("DROP TABLE Users")
 	_, err = db.Exec(sqlQueryToCreateTable)
-	_, err = db.Exec(sqlQueryToCreateUserTable)
-
 
 	if err != nil {
 		log.Fatal(err)
 	}
+	_, err = db.Exec(sqlQueryToCreateUserTable)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+
 
 	var version string
 	err = db.QueryRow("SELECT SQLITE_VERSION()").Scan(&version)
