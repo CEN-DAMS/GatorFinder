@@ -1,10 +1,11 @@
 // src/pages/Home.js
 import React, { useState } from 'react';
-import '../style.css'; // Import your CSS
+import { Link } from 'react-router-dom';
+import '../style.css';
 
 const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  
+
   // Static events – these could later come from an API call to your backend.
   const events = [
     { id: 1, title: 'Event 1', description: 'Event 1 Description' },
@@ -21,6 +22,10 @@ const Home = () => {
     <div>
       <header>
         <div className="logo">GatorFinder</div>
+        <nav className="nav-buttons">
+          <Link to="/login">Login</Link>
+          <Link to="/signup">Sign Up</Link>
+        </nav>
       </header>
       <main>
         <div className="search-container">

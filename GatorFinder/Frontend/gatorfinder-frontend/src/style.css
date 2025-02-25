@@ -18,6 +18,18 @@ header {
     position: relative;
 }
 
+.nav-buttons {
+    position: absolute;
+    right: 30px;
+}
+
+.nav-buttons a {
+    margin-left: 15px;
+    color: white;
+    text-decoration: none;
+    font-size: 16px;
+}
+
 .logo {
     position: absolute;
     left: 30px; 
