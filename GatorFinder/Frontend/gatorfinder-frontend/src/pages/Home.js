@@ -1,6 +1,7 @@
 // src/pages/Home.js
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
+import axios from "axios";
 import '../style.css';
 
 const Home = () => {
@@ -17,6 +18,30 @@ const Home = () => {
     event.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     event.description.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+    const [data, setData] = useState(null);
+    const [error, setError] = useState(null);
+
+    const fetchEvents = async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/events/get");
+        setData(response.data); // Store the fetched data
+        setError(null); // Clear any previous errors
+      } catch (err) {
+        setError("Failed to fetch Events");
+        setData(null); // Clear previous data
+      }
+    };
+    const fetchUsers= async () => {
+      try {
+        const response = await axios.get("http://localhost:8080/users/get");
+        setData(response.data);
+        setError(null);
+      } catch (err) {
+        setError("Failed to fetch Users");
+        setData(null);
+      }
+    };
 
   return (
     <div>
@@ -50,6 +75,16 @@ const Home = () => {
               </div>
             </div>
           ))}
+        </div>
+        <div>
+            <button onClick={fetchEvents}>Get Events</button> 
+            <button onClick={fetchUsers}>Get Users</button>
+            {error && <p style={{ color: "red" }}>{error}</p>}
+            {data && (
+              <pre style={{ textAlign: "left", background: "#f4f4f4", padding: "10px" }}>
+                {JSON.stringify(data, null, 2)}
+              </pre>
+            )}
         </div>
       </main>
     </div>
