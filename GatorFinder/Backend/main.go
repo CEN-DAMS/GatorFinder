@@ -10,6 +10,9 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/handlers"
+
+    //"github.com/gin-contrib/cors"
 
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -75,6 +78,13 @@ func StartServer() {
 		w.Write([]byte("Welcome to GatorFinder API"))
 	})
 
+	// Setup CORS
+	corsHandler := handlers.CORS(
+		handlers.AllowedOrigins([]string{"http://localhost:3000"}), // Allow React frontend
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
+		handlers.AllowedHeaders([]string{"Content-Type", "Authorization"}),
+	)
+
 	// Get port from env or default to 8080
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -82,5 +92,6 @@ func StartServer() {
 	}
 
 	log.Printf("Server running on port %s", port)
-	log.Fatal(http.ListenAndServe(":"+port, router))
+	//log.Fatal(http.ListenAndServe(":"+port, router))
+	log.Fatal(http.ListenAndServe(":8080", corsHandler(router)))
 }
