@@ -160,9 +160,6 @@ func DeleteEvent(w http.ResponseWriter, r *http.Request) {
 
 }
 
-
-
-
 // @Summary Add a new User
 // @Description Adds a new User to the system
 // @Tags Users
