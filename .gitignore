@@ -1,1 +1,5 @@
 node_modules
+GatorFinder/Frontend/gatorfinder-frontend/package-lock.json
+GatorFinder/Frontend/gatorfinder-frontend/package.json
+
+.gitignore
