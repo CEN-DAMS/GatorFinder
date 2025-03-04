@@ -5,19 +5,19 @@ List unit tests for backend
 Add documentation for your backend API 
 
 
-1. Add unit tests for backend go
-Added : 
-1 TestGetEvent
-2 TestAddUser
-3 TestGetUsers
+- Add unit tests for backend go
+Added :
+1. TestGetEvent
+2. TestAddUser
+3. TestGetUsers
 
-2. Add Front-end tests
+- Add Front-end tests
 
-3. Work done in this Sprint2
+- Work done in this Sprint2
 Add unit tests for backend and frontend
 ( Make progress on issues uncompleted in Sprint 1 )
 
-4. Documentation For Backend API
+6. Documentation For Backend API
 Overview :
 This file contains HTTP handler functions for managing events and users in the system. The handlers interact with a SQLite database (located at ./test.db) to perform CRUD operations. Each function opens its own database connection, executes a SQL statement, and returns JSON responses indicating success or failure. Swagger-style comments are provided for API documentation, and additional inline comments explain each step in the code.
 
