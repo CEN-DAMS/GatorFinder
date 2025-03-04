@@ -6,10 +6,10 @@ Add documentation for your backend API
 
 
 - Added Backend tests:
-1. TestAddEvent
-2. TestGetEvent
-3. TestAddUser
-4. TestGetUsers
+  1. TestAddEvent
+  2. TestGetEvent
+  3. TestAddUser
+  4. TestGetUsers
 
 - Add Front-end tests
 
