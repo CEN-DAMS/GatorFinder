@@ -10,6 +10,9 @@ import (
 	"os"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/handlers"
+
+    //"github.com/gin-contrib/cors"
 
 	httpSwagger "github.com/swaggo/http-swagger"
 )
@@ -26,14 +29,35 @@ func main() {
 						uid INTEGER PRIMARY KEY AUTOINCREMENT,
 						username VARCHAR(64) NULL,
 						eventname VARCHAR(64) NULL,
-						eventdescription VARCHAR(64) NULL,						
-						created DATE NULL
+						eventdescription VARCHAR(64) NULL,
+						created DATE NULL,
+						startDate DATE NULL,
+						endDate DATE NULL,
+						startTime TIME NULL,
+						endTime TIME NULL,
+						image VARCHAR(64) NULL
 	);`
+	sqlQueryToCreateUserTable :=
+		`
+		   				CREATE TABLE IF NOT EXISTS Users (
+						uid INTEGER PRIMARY KEY AUTOINCREMENT,
+						username VARCHAR(64) UNIQUE,
+						email VARCHAR(64) NULL,
+						password VARCHAR(64) NULL
+	);`
+	//_, err = db.Exec("DROP TABLE events")
+	//_, err = db.Exec("DROP TABLE Users")
 	_, err = db.Exec(sqlQueryToCreateTable)
 
 	if err != nil {
 		log.Fatal(err)
 	}
+	_, err = db.Exec(sqlQueryToCreateUserTable)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+
 
 	var version string
 	err = db.QueryRow("SELECT SQLITE_VERSION()").Scan(&version)
@@ -48,6 +72,7 @@ func StartServer() {
 
 	// Register API Routes
 	routes.RegisterEventRoutes(router)
+	routes.RegisterUserRoutes(router)
 
 	// Swagger UI route
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
@@ -57,6 +82,13 @@ func StartServer() {
 		w.Write([]byte("Welcome to GatorFinder API"))
 	})
 
+	// Setup CORS
+	corsHandler := handlers.CORS(
+		handlers.AllowedOrigins([]string{"http://localhost:3000"}), // Allow React frontend
+		handlers.AllowedMethods([]string{"GET", "POST", "PUT", "DELETE", "OPTIONS"}),
+		handlers.AllowedHeaders([]string{"Content-Type", "Authorization"}),
+	)
+
 	// Get port from env or default to 8080
 	port := os.Getenv("PORT")
 	if port == "" {
@@ -64,5 +96,6 @@ func StartServer() {
 	}
 
 	log.Printf("Server running on port %s", port)
-	log.Fatal(http.ListenAndServe(":"+port, router))
+	//log.Fatal(http.ListenAndServe(":"+port, router))
+	log.Fatal(http.ListenAndServe(":8080", corsHandler(router)))
 }

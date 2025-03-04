@@ -1,13 +1,34 @@
 definitions:
   models.Event:
     properties:
-      date:
+      datePosted:
         type: string
       description:
         type: string
+      endDate:
+        type: string
+      endTime:
+        type: string
       id:
         type: string
+      image:
+        type: string
       name:
+        type: string
+      startDate:
+        type: string
+      startTime:
+        type: string
+      username:
+        type: string
+    type: object
+  models.User:
+    properties:
+      email:
+        type: string
+      id:
+        type: string
+      password:
         type: string
       username:
         type: string
@@ -75,4 +96,64 @@ paths:
       summary: Get event details
       tags:
       - Events
+  /users/add:
+    post:
+      consumes:
+      - application/json
+      description: Adds a new User to the system
+      parameters:
+      - description: User Data
+        in: body
+        name: event
+        required: true
+        schema:
+          $ref: '#/definitions/models.User'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/models.User'
+      summary: Add a new User
+      tags:
+      - Users
+  /users/delete:
+    delete:
+      consumes:
+      - application/json
+      description: Deletes a User from the system by ID
+      parameters:
+      - description: User ID
+        in: query
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: User deleted successfully
+          schema:
+            type: string
+      summary: Delete a User
+      tags:
+      - Users
+  /users/get:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves user details from the system
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+      summary: Get user details
+      tags:
+      - Users
 swagger: "2.0"
