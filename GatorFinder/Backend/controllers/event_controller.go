@@ -13,7 +13,7 @@ import (
 )
 
 // Sample events list
-var events []models.Event
+//var events []models.Event
 
 func checkErr(err error) {
 	if err != nil {

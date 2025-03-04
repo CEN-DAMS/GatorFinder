@@ -33,6 +33,32 @@ func setupTestDB() *sql.DB {
 	}
 	return db
 }
+//Test AddEvent
+func TestAddEvent(t *testing.T) {
+	event := models.Event{
+		User: "testUser",
+		EventName:    "test@example.com",
+		EventDescription:  "description",
+		DatePosted:              "",
+		StartDate:              "",
+		EndDate:              "",
+		StartTime:              "",
+		EndTime:             "",
+		ImageURL:  "",
+	}
+
+	jsonData, _ := json.Marshal(event)
+	req, _ := http.NewRequest("POST", "/events/add", bytes.NewBuffer(jsonData))
+	req.Header.Set("Content-Type", "application/json")
+
+	rr := httptest.NewRecorder()
+	handler := http.HandlerFunc(AddEvent)
+	handler.ServeHTTP(rr, req)
+
+	if rr.Code != http.StatusOK {
+		t.Errorf("Expected status 200, got %d", rr.Code)
+	}
+}
 
 // Test GetEvent
 func TestGetEvent(t *testing.T) {
