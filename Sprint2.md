@@ -1,18 +1,37 @@
 Sprint2.md
 
-- Added Back-end tests:
-  1. TestAddEvent
-  2. TestGetEvent
-  3. TestAddUser
-  4. TestGetUsers
-
-- Add Front-end tests
-
 - Work done in this Sprint2
   - Added User table to database
   - Added POST, GET, DELETE User functions
   - Connected front and back end
   - Implemented Cross-Origin Resourse Sharing
+  - Converted the front-end to use React
+  - Set up and implemented basic unit and Cypress tests.
+
+Front-End: 
+
+Unit Tests: 
+
+- Test 1 - "navigates from Login to Signup page": This unit test navigates to the login page, clicks on the Sign Up hyperlink where it says "Don't have an account? Sign Up" and then successfully navigates to the Sign Up page.
+
+- Test 2 - "navigates from Signup to Login page": This unit test navigates to the sign up page, clicks on the Login hyperlink where it says "Already have an account? Login" and then successfully navigates to the Log in page.
+
+- Test 3- "search bar functionality test": This unit tests searches "event 1" in the search bar and makes sure that information regarding only event 1 is displayed while information about the other events are not displayed whatsoever.
+
+Cypress Tests: 
+
+- Test 1 - "login.cy.js" :  This cypress test visits the login page, enters sample user information to log in, show an error if the login fields are empty, attempt to login, and navigate to the sign up page when the hyperlink is clicked on the bottom of the screen.
+
+- Test 2-  "searchbar.cy.js" : This cypress test searches "event 1" in the search bar and ensures that only event 1 is disaplyed on the screen while the rest of the events are not displayed.
+
+- Test 3 - "signup.cy.js" : This cypress test visits the sign up page, enters sample user information to sign up, show an error if the sign up fields are empty, attempt to sign up, and navigate to the log in page when the hyperlink is clicked on the bottom of the screen.
+
+
+- Added Back-end tests:
+  1. TestAddEvent
+  2. TestGetEvent
+  3. TestAddUser
+  4. TestGetUsers
 
 
 6. Documentation For Backend API
