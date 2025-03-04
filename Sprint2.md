@@ -5,16 +5,21 @@ List unit tests for backend
 Add documentation for your backend API 
 
 
-- Add unit tests for backend go
-Added :
-1. TestGetEvent
-2. TestAddUser
-3. TestGetUsers
+- Added Backend tests:
+1. TestAddEvent
+2. TestGetEvent
+3. TestAddUser
+4. TestGetUsers
 
 - Add Front-end tests
 
 - Work done in this Sprint2
-Add unit tests for backend and frontend
+  - Added User table to database
+  - Added POST, GET, DELETE User functions
+  - Connected front and back end
+  - Implemented Cross-Origin Resourse Sharing
+
+
 ( Make progress on issues uncompleted in Sprint 1 )
 
 6. Documentation For Backend API
