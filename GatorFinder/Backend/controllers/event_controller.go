@@ -116,7 +116,15 @@ func GetEvent(w http.ResponseWriter, r *http.Request) {
 
 		rowMap := make(map[string]interface{})
 		for i, colName := range cols {
-   			rowMap[colName] = values[i]
+   			//rowMap[colName] = values[i]
+			val := values[i]
+
+			// Convert []byte to string for readability
+			if b, ok := val.([]byte); ok {
+				rowMap[colName] = string(b)
+			} else {
+				rowMap[colName] = val
+			}
 		}
 		events = append(events, rowMap)
 	}
@@ -144,7 +152,7 @@ func DeleteEvent(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	stmt, err := db.Prepare(`
-				    DELETE FROM Events 
+				    DELETE FROM Events
     				WHERE uid = ?
 					`)
 
