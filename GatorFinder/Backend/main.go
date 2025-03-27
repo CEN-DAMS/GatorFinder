@@ -11,22 +11,36 @@ import (
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/handlers"
+	_ "github.com/aws/aws-sdk-go-v2/config"
+    _ "github.com/aws/aws-sdk-go-v2/feature/rds/auth"
+	_ "github.com/go-sql-driver/mysql"
 
     //"github.com/gin-contrib/cors"
 
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
+
 func main() {
-	db, err := sql.Open("sqlite3", "./test.db")
+	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database-1.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
+	pingErr := db.Ping()
+	if pingErr != nil {
+    	log.Fatal(pingErr)
+  	}
+  	fmt.Println("Connected!")
+	// _, err = db.Exec("CREATE DATABASE test")
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+
 	sqlQueryToCreateTable :=
 		`
-		   				CREATE TABLE IF NOT EXISTS events (
-						uid INTEGER PRIMARY KEY AUTOINCREMENT,
+		   				CREATE TABLE IF NOT EXISTS Events (
+						uid INTEGER PRIMARY KEY AUTO_INCREMENT,
 						username VARCHAR(64) NULL,
 						eventname VARCHAR(64) NULL,
 						eventdescription VARCHAR(64) NULL,
@@ -40,7 +54,7 @@ func main() {
 	sqlQueryToCreateUserTable :=
 		`
 		   				CREATE TABLE IF NOT EXISTS Users (
-						uid INTEGER PRIMARY KEY AUTOINCREMENT,
+						uid INTEGER PRIMARY KEY AUTO_INCREMENT,
 						username VARCHAR(64) UNIQUE,
 						email VARCHAR(64) NULL,
 						password VARCHAR(64) NULL
@@ -60,7 +74,7 @@ func main() {
 
 
 	var version string
-	err = db.QueryRow("SELECT SQLITE_VERSION()").Scan(&version)
+	err = db.QueryRow("SELECT VERSION()").Scan(&version)
 	if err != nil {
 		log.Fatal(err)
 	}

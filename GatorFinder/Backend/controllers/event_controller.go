@@ -12,8 +12,8 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 )
 
-// Sample events list
-//var events []models.Event
+// Sample Events list
+//var Events []models.Event
 
 func checkErr(err error) {
 	if err != nil {
@@ -40,7 +40,7 @@ func AddEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Open database connection
-	db, err := sql.Open("sqlite3", "./test.db")
+	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database-1.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
 	if err != nil {
 		http.Error(w, "Failed to connect to database", http.StatusInternalServerError)
 		return
@@ -48,7 +48,7 @@ func AddEvent(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	// Prepare SQL statement
-	stmt, err := db.Prepare("INSERT INTO events(username, eventname, eventdescription, created, startDate, endDate, startTime, endTime, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
+	stmt, err := db.Prepare("INSERT INTO Events(username, eventname, eventdescription, created, startDate, endDate, startTime, endTime, image) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)")
 	if err != nil {
 		http.Error(w, "Failed to prepare SQL statement", http.StatusInternalServerError)
 		return
@@ -75,14 +75,14 @@ func AddEvent(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} models.Event
 // @Router /events/get [get]
 func GetEvent(w http.ResponseWriter, r *http.Request) {
-	db, err := sql.Open("sqlite3", "./test.db")
+	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database-1.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
 	if err != nil {
 		http.Error(w, "Failed to connect to database", http.StatusInternalServerError)
 		return
 	}
 	defer db.Close()
 
-	rows, err := db.Query("SELECT * FROM events")
+	rows, err := db.Query("SELECT * FROM Events")
 	if err != nil {
 		http.Error(w, "Failed to fetch events", http.StatusInternalServerError)
 		return
@@ -125,7 +125,7 @@ func GetEvent(w http.ResponseWriter, r *http.Request) {
 func DeleteEvent(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Delete function called")
 
-	db, err := sql.Open("sqlite3", "./test.db")
+	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database-1.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
 	if err != nil {
 		http.Error(w, "Failed to connect to database", http.StatusInternalServerError)
 		return
@@ -133,7 +133,7 @@ func DeleteEvent(w http.ResponseWriter, r *http.Request) {
 	defer db.Close()
 
 	stmt, err := db.Prepare(`
-				    DELETE FROM events 
+				    DELETE FROM Events 
     				WHERE uid = ?
 					`)
 
@@ -179,7 +179,7 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Open database connection
-	db, err := sql.Open("sqlite3", "./test.db")
+	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database-1.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
 	if err != nil {
 		http.Error(w, "Failed to connect to database", http.StatusInternalServerError)
 		return
@@ -214,7 +214,7 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} models.User
 // @Router /users/get [get]
 func GetUsers(w http.ResponseWriter, r *http.Request) {
-	db, err := sql.Open("sqlite3", "./test.db")
+	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database-1.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
 	if err != nil {
 		http.Error(w, "Failed to connect to database", http.StatusInternalServerError)
 		return
@@ -264,7 +264,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Delete function called")
 
-	db, err := sql.Open("sqlite3", "./test.db")
+	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database-1.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
 	if err != nil {
 		http.Error(w, "Failed to connect to database", http.StatusInternalServerError)
 		return
