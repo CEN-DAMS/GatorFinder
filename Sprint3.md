@@ -1,8 +1,8 @@
 Sprint3.md
 
 - Work done in this Sprint 3
-  - Updated database to MySQL (from sqlite3)
-  - Set up database in AWS for cloud access
+  - Updated database to MySQL (from SQLite3)
+  - Set up database in AWS for Cloud access
   - Updated functions for MySQL and AWS usability
   - Updated Backend documentation and test cases
 
@@ -31,7 +31,7 @@ This file contains HTTP handler functions for managing events and users in the s
   - Purpose: Handles POST requests to add a new event.
   - Workflow:
     - Decodes the incoming JSON payload into an Event model.
-    - Opens a connection to the SQLite database.
+    - Opens a connection to the AWS MySQL database.
     - Prepares an INSERT SQL statement and executes it using the data from the payload.
     - Returns a JSON response with a success message if the insertion succeeds, or an error message otherwise.
   - Swagger Annotations: Annotations provide metadata for API documentation tools, indicating the endpoint, request body, response type, and HTTP method.
