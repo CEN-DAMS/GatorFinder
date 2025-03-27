@@ -27,7 +27,7 @@ func init() {
 
 // Setup test database
 func setupTestDB() *sql.DB {
-	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database-1.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
+	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
 	if err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}

@@ -5,6 +5,7 @@ go 1.23.6
 require (
 	github.com/aws/aws-sdk-go-v2/config v1.29.11
 	github.com/aws/aws-sdk-go-v2/feature/rds/auth v1.5.11
+	github.com/aws/aws-sdk-go-v2/service/kms v1.38.1
 	github.com/gin-gonic/gin v1.10.0
 	github.com/go-sql-driver/mysql v1.9.1
 	github.com/gorilla/handlers v1.5.2

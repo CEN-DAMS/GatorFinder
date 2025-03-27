@@ -3,14 +3,25 @@ package controllers
 import (
 	"database/sql"
 	"encoding/json"
+	"encoding/base64"
 	"fmt"
 	"log"
 	"net/http"
 
 	"backend/models" // Ensure correct import path
 
+	_ "github.com/aws/aws-sdk-go-v2/aws"
 	_ "github.com/mattn/go-sqlite3"
 )
+
+
+func decodeBase64(encodedString string) (string, error) {
+	decodedBytes, err := base64.StdEncoding.DecodeString(encodedString)
+	if err != nil {
+		return "", fmt.Errorf("decoding error: %w", err)
+	}
+	return string(decodedBytes), nil
+}
 
 // Sample Events list
 //var Events []models.Event
@@ -40,7 +51,7 @@ func AddEvent(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Open database connection
-	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database-1.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
+	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
 	if err != nil {
 		http.Error(w, "Failed to connect to database", http.StatusInternalServerError)
 		return
@@ -75,7 +86,7 @@ func AddEvent(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} models.Event
 // @Router /events/get [get]
 func GetEvent(w http.ResponseWriter, r *http.Request) {
-	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database-1.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
+	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
 	if err != nil {
 		http.Error(w, "Failed to connect to database", http.StatusInternalServerError)
 		return
@@ -105,7 +116,7 @@ func GetEvent(w http.ResponseWriter, r *http.Request) {
 
 		rowMap := make(map[string]interface{})
 		for i, colName := range cols {
-			rowMap[colName] = values[i]
+   			rowMap[colName] = values[i]
 		}
 		events = append(events, rowMap)
 	}
@@ -125,7 +136,7 @@ func GetEvent(w http.ResponseWriter, r *http.Request) {
 func DeleteEvent(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Delete function called")
 
-	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database-1.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
+	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
 	if err != nil {
 		http.Error(w, "Failed to connect to database", http.StatusInternalServerError)
 		return
@@ -179,7 +190,7 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Open database connection
-	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database-1.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
+	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
 	if err != nil {
 		http.Error(w, "Failed to connect to database", http.StatusInternalServerError)
 		return
@@ -214,7 +225,7 @@ func AddUser(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} models.User
 // @Router /users/get [get]
 func GetUsers(w http.ResponseWriter, r *http.Request) {
-	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database-1.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
+	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
 	if err != nil {
 		http.Error(w, "Failed to connect to database", http.StatusInternalServerError)
 		return
@@ -264,7 +275,7 @@ func GetUsers(w http.ResponseWriter, r *http.Request) {
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("Delete function called")
 
-	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database-1.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
+	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
 	if err != nil {
 		http.Error(w, "Failed to connect to database", http.StatusInternalServerError)
 		return
