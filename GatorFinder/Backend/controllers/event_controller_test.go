@@ -190,3 +190,17 @@ func TestDeleteUser_NonExistentID(t *testing.T) {
 		t.Logf("Response body: %s", rr.Body.String())
 	}
 }
+func TestDeleteUser_InvalidID(t *testing.T) {
+	req, err := http.NewRequest("DELETE", "/users/delete?id=", nil) // ID should be numeric
+	if err != nil {
+		t.Fatalf("Could not create request: %v", err)
+	}
+
+	rr := httptest.NewRecorder()
+	DeleteUser(rr, req)
+
+	if rr.Code != http.StatusBadRequest {
+		t.Errorf("Expected status 500 due to query failure, got %d", rr.Code)
+		t.Logf("Response body: %s", rr.Body.String())
+	}
+}
