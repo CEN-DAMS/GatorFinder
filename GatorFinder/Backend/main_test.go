@@ -69,18 +69,3 @@ func TestGetItem(t *testing.T) {
 	assert.Equal(t, http.StatusCreated, w.Code)
 	assert.Contains(t, w.Body.String(), "Item created")
 }
-
-func TestAddEvent(t *testing.T) {
-	//Test adding Event to db
-}
-
-func TestGetEvent(t *testing.T) {
-	//Test getting Event from db
-}
-
-func TestAddUser(t *testing.T) {
-	//Test adding User to db
-}
-func TestGetUser(t *testing.T) {
-	//Test getting User from db
-}
