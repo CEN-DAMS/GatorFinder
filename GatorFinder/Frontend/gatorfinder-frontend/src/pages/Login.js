@@ -1,14 +1,20 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Container, Typography, TextField, Button, Box, Paper } from '@mui/material';
 
 const Login = () => {
   const [usernameEmail, setUsernameEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();
 
   const handleLogin = (e) => {
     e.preventDefault();
     console.log('Login data:', { usernameEmail, password });
+
+    // TODO: Add actual authentication logic here
+
+    // After successful login, redirect to Home
+    navigate('/home');
   };
 
   return (
