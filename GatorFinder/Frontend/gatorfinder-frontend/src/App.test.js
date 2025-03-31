@@ -3,8 +3,9 @@ import { render, screen, fireEvent } from '@testing-library/react';
 import App from './App';
 
 test('renders GatorFinder logo', () => {
+  window.history.pushState({}, 'Home Page', '/home');
   render(<App />);
-  const logoElement = screen.getByText(/gatorfinder/i);
+  const logoElement = screen.getByText(/GatorFinder/i);
   expect(logoElement).toBeInTheDocument();
 });
 
