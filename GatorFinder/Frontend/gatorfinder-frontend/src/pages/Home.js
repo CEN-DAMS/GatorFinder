@@ -32,11 +32,10 @@ const Home = () => {
   const [rawEventData, setRawEventData] = useState(null);
   const [showDebug, setShowDebug] = useState(false);
 
-  const filteredEvents = events.filter(
-    (event) =>
-      event.eventname?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.eventdescription?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      event.username?.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredEvents = events.filter((event) =>
+    [event.eventname, event.name, event.eventdescription, event.description, event.username]
+      .filter(Boolean)
+      .some(field => field.toLowerCase().includes(searchTerm.toLowerCase()))
   );
 
   const filteredUsers = users.filter(
