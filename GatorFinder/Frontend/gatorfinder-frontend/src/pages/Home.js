@@ -19,6 +19,8 @@ import {
 import { Dialog, DialogTitle, DialogContent, DialogActions, Fab } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
+import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import { IconButton } from '@mui/material';
 import axios from 'axios';
 
 const Home = () => {
@@ -309,13 +311,15 @@ const Home = () => {
               GatorFinder
             </Typography>
           </Box>
-          <Box sx={{ display: 'flex', gap: 3 }}>
-            <Button component={Link} to="/login" sx={{ color: '#000000', textTransform: 'none' }}>
-              LOGIN
-            </Button>
-            <Button component={Link} to="/signup" sx={{ color: '#000000', textTransform: 'none' }}>
-              SIGN UP
-            </Button>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
+            <IconButton 
+              component={Link} 
+              to="/profile" 
+              sx={{ color: '#000000' }}
+              aria-label="Profile"
+            >
+              <AccountBoxIcon fontSize="large" />
+            </IconButton>
           </Box>
         </Toolbar>
       </AppBar>
