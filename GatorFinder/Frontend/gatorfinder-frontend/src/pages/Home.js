@@ -16,6 +16,8 @@ import {
   CardHeader,
   Divider
 } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Fab } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import axios from 'axios';
 
@@ -128,6 +130,41 @@ const Home = () => {
       setUsers([]);
     } finally {
       setLoading(false);
+    }
+  };
+
+  
+
+  const [newEvent, setNewEvent] = useState({
+    uid: 1,
+    username: "temp",
+    name: '',
+    description: '',
+    startDate: '',
+    endDate: '',
+    startTime: '',
+    endTime: '',
+    image: "temp"
+  });
+ 
+  const [openDialog, setOpenDialog] = useState(false);
+  const handleCreateEvent = async () => {
+    console.log("Posting event:", newEvent);
+    try {
+      await axios.post("http://localhost:8080/events/add", newEvent);
+      setOpenDialog(false);
+      setNewEvent({
+        name: '',
+        description: '',
+        startDate: '',
+        startTime: '',
+        endDate: '',
+        endTime: '',
+        image: ''
+      });
+      fetchEvents();
+    } catch (err) {
+      setError("Failed to create event");
     }
   };
 
@@ -416,6 +453,73 @@ const Home = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
+      <Fab
+        color="primary"
+        aria-label="add"
+        sx={{ position: 'fixed', bottom: 32, right: 32, backgroundColor: '#ff9800' }}
+        onClick={() => setOpenDialog(true)}
+      >
+        <AddIcon />
+      </Fab>
+      <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="sm">
+          <DialogTitle>Create Event</DialogTitle>
+          <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+            <TextField
+              label="Event Name"
+              value={newEvent.name}
+              onChange={(e) => setNewEvent({ ...newEvent, name: e.target.value })}
+            />
+            <TextField
+              label="Description"
+              value={newEvent.description}
+              onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
+              multiline
+              rows={3}
+            />
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Start Date"
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                value={newEvent.startDate}
+                onChange={(e) => setNewEvent({ ...newEvent, startDate: e.target.value })}
+                fullWidth
+              />
+              <TextField
+                label="End Date"
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                value={newEvent.endDate}
+                onChange={(e) => setNewEvent({ ...newEvent, endDate: e.target.value })}
+                fullWidth
+              />
+            </Box>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Start Time"
+                type="time"
+                InputLabelProps={{ shrink: true }}
+                value={newEvent.startTime}
+                onChange={(e) => setNewEvent({ ...newEvent, startTime: e.target.value })}
+                fullWidth
+              />
+              <TextField
+                label="End Time"
+                type="time"
+                InputLabelProps={{ shrink: true }}
+                value={newEvent.endTime}
+                onChange={(e) => setNewEvent({ ...newEvent, endTime: e.target.value })}
+                fullWidth
+              />
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+            <Button onClick={handleCreateEvent} variant="contained" sx={{ textTransform: 'none' }}>
+              Create
+            </Button>
+          </DialogActions>
+        </Dialog>
     </>
   );
 };
