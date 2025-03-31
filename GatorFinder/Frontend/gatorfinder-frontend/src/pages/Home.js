@@ -30,6 +30,7 @@ const Home = () => {
   const [loading, setLoading] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [rawEventData, setRawEventData] = useState(null);
+  const [showDebug, setShowDebug] = useState(false);
 
   const filteredEvents = events.filter(
     (event) =>
@@ -391,8 +392,8 @@ const Home = () => {
           </Box>
         ) : (
           <>
-            {displayType === 'events' && rawEventData && (
-              <Card sx={{ mb: 4, boxShadow: 3, borderRadius: 2 }}>
+            {displayType === 'events' && rawEventData && showDebug && (
+                <Card sx={{ mb: 4, boxShadow: 3, borderRadius: 2 }}>
                 <CardHeader 
                   title="Raw JSON Data" 
                   sx={{ 
@@ -520,6 +521,29 @@ const Home = () => {
             </Button>
           </DialogActions>
         </Dialog>
+        <Button
+          onClick={() => setShowDebug(prev => !prev)}
+          sx={{
+            position: 'fixed',
+            bottom: 32,
+            left: 32,
+            backgroundColor: 'rgba(255, 89, 0, 0.2)',
+            color: '#ffffff',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
+            backdropFilter: 'blur(4px)',
+            fontSize: '0.85rem',
+            padding: '6px 12px',
+            borderRadius: '8px',
+            textTransform: 'none',
+            '&:hover': {
+              backgroundColor: 'rgba(255, 183, 0, 0.1)',
+              borderColor: '#ffffff',
+            },
+          }}
+        >
+          {showDebug ? 'Hide Debug' : 'Show Debug'}
+        </Button>
+
     </>
   );
 };
