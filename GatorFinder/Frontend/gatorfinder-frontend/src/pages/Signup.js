@@ -1,7 +1,6 @@
-// src/pages/Signup.js
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import '../style.css';
+import { Container, Typography, TextField, Button, Box, Paper } from '@mui/material';
 
 const Signup = () => {
   const [username, setUsername] = useState('');
@@ -11,75 +10,60 @@ const Signup = () => {
 
   const handleSignup = (e) => {
     e.preventDefault();
-    // TODO: Validate and connect to backend API
-    console.log("Signup data:", { username, email, password, confirmPassword });
+    console.log('Signup data:', { username, email, password, confirmPassword });
   };
 
   return (
-    <div>
-      <header>
-        <div className="logo">GatorFinder</div>
-      </header>
-      <main>
-        <div className="auth-container">
-          <h2>Sign Up</h2>
-          <form onSubmit={handleSignup}>
-            <div className="form-group">
-              <label htmlFor="username">Username</label>
-              <input
-                type="text"
-                id="username"
-                name="username"
-                placeholder="Choose a username"
-                required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="email">Email</label>
-              <input
-                type="email"
-                id="email"
-                name="email"
-                placeholder="Enter your email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="password">Password</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                placeholder="Enter your password"
-                required
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-            <div className="form-group">
-              <label htmlFor="confirmPassword">Confirm Password</label>
-              <input
-                type="password"
-                id="confirmPassword"
-                name="confirmPassword"
-                placeholder="Confirm your password"
-                required
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-              />
-            </div>
-            <button type="submit">Sign Up</button>
-          </form>
-          <p>
-            Already have an account? <Link to="/login">Login</Link>
-          </p>
-        </div>
-      </main>
-    </div>
+    <Container maxWidth="sm" sx={{ mt: 8, backgroundColor: '#f5f5f5', py: 4 }}>
+      <Paper elevation={3} sx={{ p: 4, backgroundColor: '#ffffff' }}>
+        <Typography variant="h4" align="center" gutterBottom color="#ff9800">
+          SIGN UP
+        </Typography>
+        <Box component="form" onSubmit={handleSignup} sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+          <TextField
+            label="Username"
+            variant="outlined"
+            required
+            fullWidth
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+          <TextField
+            label="Email"
+            type="email"
+            variant="outlined"
+            required
+            fullWidth
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+          />
+          <TextField
+            label="Password"
+            type="password"
+            variant="outlined"
+            required
+            fullWidth
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+          <TextField
+            label="Confirm Password"
+            type="password"
+            variant="outlined"
+            required
+            fullWidth
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+          />
+          <Button type="submit" variant="contained" color="primary" fullWidth sx={{ textTransform: 'none' }}>
+            Sign Up
+          </Button>
+        </Box>
+        <Typography variant="body2" align="center" sx={{ mt: 2 }}>
+          Already have an account? <Link to="/login">Login</Link>
+        </Typography>
+      </Paper>
+    </Container>
   );
 };
 
