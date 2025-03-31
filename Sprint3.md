@@ -57,30 +57,30 @@ This file contains HTTP handler functions for managing events and users in the s
     - Executes a SELECT query on the events table.
     - Iterates over the results, converting each row into a map, and aggregates the maps into a slice.
     - Sends the slice as a JSON response.
-    - Outgoing JSON payload will be in the following example format (where "" delineates a 64 character string that may be empty and strings with 0 showing an "empty" date/time):
-    ```
-        [
-          {
-            "created": "0000-00-00",
-            "endDate": "0000-00-00",
-            "endTime": "00:00:00",
-            "eventdescription": "",
-            "eventname": "",
-            "image": "",
-            "startDate": "0000-00-00",
-            "startTime": "00:00:00",
-            "uid": 1,
-            "username": ""
-          },
-          {
-            ...(event info)
-          },
-          ...(more events)
-          {
-            ...(final event info)
-          }
-        ]
-    ```
+      - Outgoing JSON payload will be in the following example format (where "" delineates a 64 character string that may be empty and strings with 0 showing an "empty" date/time):
+      ```
+          [
+            {
+              "created": "0000-00-00",
+              "endDate": "0000-00-00",
+              "endTime": "00:00:00",
+              "eventdescription": "",
+              "eventname": "",
+              "image": "",
+              "startDate": "0000-00-00",
+              "startTime": "00:00:00",
+              "uid": 1,
+              "username": ""
+            },
+            {
+              ...(event info)
+            },
+            ...(more events)
+            {
+              ...(final event info)
+            }
+          ]
+      ```
   - Error Handling: Returns HTTP 500 if there is an error connecting to the database or reading rows.
 
 - DeleteEvent
@@ -115,24 +115,24 @@ This file contains HTTP handler functions for managing events and users in the s
     - Executes a SELECT query to retrieve all users.
     - Converts each row into a map and aggregates these maps into a slice.
     - Returns the slice as JSON.
-    - Outgoing JSON payload will be in the following example format (where "" delineates a 64 character string that may be empty):
-    ```
-        [
-          {
-            "email": "test@example.com",
-            "password": "password123",
-            "uid": 2,
-            "username": "testuser"
-          },
-          {
-            ...(user info)
-          },
-          ...(more users)
-          {
-            ...(final user info)
-          }
-        ]
-    ```
+      - Outgoing JSON payload will be in the following example format (where "" delineates a 64 character string that may be empty):
+      ```
+          [
+            {
+              "email": "test@example.com",
+              "password": "password123",
+              "uid": 2,
+              "username": "testuser"
+            },
+            {
+              ...(user info)
+            },
+            ...(more users)
+            {
+              ...(final user info)
+            }
+          ]
+      ```
 
 - DeleteUser
   - Purpose: Handles DELETE requests to remove a user by ID.
