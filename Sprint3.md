@@ -31,6 +31,20 @@ This file contains HTTP handler functions for managing events and users in the s
   - Purpose: Handles POST requests to add a new event.
   - Workflow:
     - Decodes the incoming JSON payload into an Event model.
+      - Incoming JSON payload should be in the following format (where "" delineates a 64 character string that may be empty):
+      ```
+      {
+        "created": "",
+        "endDate": "",
+        "endTime": "",
+        "eventdescription": "",
+        "eventname": "",
+        "image": "",
+        "startDate": "",
+        "startTime": "",
+        "username": ""
+      }
+      ```
     - Opens a connection to the AWS MySQL database.
     - Prepares an INSERT SQL statement and executes it using the data from the payload.
     - Returns a JSON response with a success message if the insertion succeeds, or an error message otherwise.
@@ -43,6 +57,30 @@ This file contains HTTP handler functions for managing events and users in the s
     - Executes a SELECT query on the events table.
     - Iterates over the results, converting each row into a map, and aggregates the maps into a slice.
     - Sends the slice as a JSON response.
+    - Outgoing JSON payload will be in the following example format (where "" delineates a 64 character string that may be empty and strings with 0 showing an "empty" date/time):
+    ```
+        [
+          {
+            "created": "0000-00-00",
+            "endDate": "0000-00-00",
+            "endTime": "00:00:00",
+            "eventdescription": "",
+            "eventname": "",
+            "image": "",
+            "startDate": "0000-00-00",
+            "startTime": "00:00:00",
+            "uid": 1,
+            "username": ""
+          },
+          {
+            ...(event info)
+          },
+          ...(more events)
+          {
+            ...(final event info)
+          }
+        ]
+    ```
   - Error Handling: Returns HTTP 500 if there is an error connecting to the database or reading rows.
 
 - DeleteEvent
@@ -57,6 +95,15 @@ This file contains HTTP handler functions for managing events and users in the s
   - Purpose: Handles POST requests to add a new user.
   - Workflow:
     - Decodes the JSON payload into a User model.
+      - Incoming JSON payload should be in the following format (where "" delineates a 64 character string that may be empty):
+      ```
+      {
+          "email": "",
+          "password": "",
+          "username": ""
+      }
+      ```
+      NOTE: username should be UNIQUE and not already existing in the database
     - Opens a database connection.
     - Prepares and executes an INSERT statement with the user data.
     - Returns a JSON success message or an error message.
@@ -68,6 +115,24 @@ This file contains HTTP handler functions for managing events and users in the s
     - Executes a SELECT query to retrieve all users.
     - Converts each row into a map and aggregates these maps into a slice.
     - Returns the slice as JSON.
+    - Outgoing JSON payload will be in the following example format (where "" delineates a 64 character string that may be empty):
+    ```
+        [
+          {
+            "email": "test@example.com",
+            "password": "password123",
+            "uid": 2,
+            "username": "testuser"
+          },
+          {
+            ...(user info)
+          },
+          ...(more users)
+          {
+            ...(final user info)
+          }
+        ]
+    ```
 
 - DeleteUser
   - Purpose: Handles DELETE requests to remove a user by ID.
