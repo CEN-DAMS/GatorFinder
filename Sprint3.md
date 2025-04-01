@@ -171,7 +171,7 @@ Handlers:
     - The HTTP method and route.
 Backend unit test :
 
-Here is the same documentation without formatting:
+
 
 Test Suite Documentation: User and Event Controller Unit Tests
 
