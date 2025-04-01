@@ -5,11 +5,27 @@ Sprint3.md
   - Set up database in AWS for Cloud access
   - Updated functions for MySQL and AWS usability
   - Updated Backend documentation and test cases
+  - Updated UI 
+  - Set up sending event data to backend/displayed as event cards
+  - Created template profile page linking to home
+  - Add button to create events
 
 
 Front-End:
 
 Unit Tests:
+- Test 1: "renders GatorFinder logo": tests to make sure the logo of the website is visible on the home page.
+- Test 2: "search bar functionality test": tests to make sure events can be searched via the search bar.
+- Test 3: "navigates from Login to Signup page": tests to make sure the sign up page can be navigates from the login page.
+- Test 4: "navigates from Signup to Login page": tests to make sure the login page can be navigated from the sign up page.
+
+
+Cypress Tests: 
+
+- Test 1: "login.cy.js" : tests login functionality and navigates to sign up page.
+- Test 2: "searchbar.cy.js" : tests event search via the search bar.
+- Test 3: "signup.cy.js" : tests sign up functionality and navigates to log in page.
+- Test 4: "create_event.cy.js" : tests creating an eventing and make sure it is displayed.
 
 
 
