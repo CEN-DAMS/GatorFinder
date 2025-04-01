@@ -9,15 +9,13 @@ import (
 	// "net/http"
 	// "os"
 	// "github.com/gorilla/mux"
-    "net/http"
+	"net/http"
 	"net/http/httptest"
-    "testing"
+	"testing"
 
-    "github.com/gin-gonic/gin"
-    "github.com/stretchr/testify/assert"
+	"github.com/gin-gonic/gin"
+	"github.com/stretchr/testify/assert"
 )
-
-
 
 // Helper function to set up the router
 func setupRouter() *gin.Engine {
@@ -39,7 +37,7 @@ func TestMessageEndpoint(t *testing.T) {
 	router.ServeHTTP(w, req)
 
 	// Assertions
-	assert.Equal(t, http.StatusOK, w.Code) // Check HTTP status
+	assert.Equal(t, http.StatusOK, w.Code)                // Check HTTP status
 	assert.Contains(t, w.Body.String(), "Hello from Go!") // Check response content
 }
 
