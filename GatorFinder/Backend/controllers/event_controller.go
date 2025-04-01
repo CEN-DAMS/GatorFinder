@@ -2,8 +2,8 @@ package controllers
 
 import (
 	"database/sql"
-	"encoding/json"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -13,7 +13,6 @@ import (
 	_ "github.com/aws/aws-sdk-go-v2/aws"
 	_ "github.com/mattn/go-sqlite3"
 )
-
 
 func decodeBase64(encodedString string) (string, error) {
 	decodedBytes, err := base64.StdEncoding.DecodeString(encodedString)
@@ -116,7 +115,7 @@ func GetEvent(w http.ResponseWriter, r *http.Request) {
 
 		rowMap := make(map[string]interface{})
 		for i, colName := range cols {
-   			//rowMap[colName] = values[i]
+			//rowMap[colName] = values[i]
 			val := values[i]
 
 			// Convert []byte to string for readability

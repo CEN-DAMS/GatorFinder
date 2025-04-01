@@ -9,6 +9,9 @@ Sprint3.md
   - Set up sending event data to backend/displayed as event cards
   - Created template profile page linking to home
   - Add button to create events
+  - Added more unit tests 
+  - CICD Learning and required steps documentation
+
 
 
 Front-End:
@@ -41,7 +44,7 @@ Overview :
 
 This file contains HTTP handler functions for managing events and users in the system. The handlers interact with a MySQL database (formerly SQLite3) now located on the Cloud in AWS to perform CRUD operations. Each function opens its own database connection, executes a SQL statement, and returns JSON responses indicating success or failure. Swagger-style comments are provided for API documentation, and additional inline comments explain each step in the code.
 
-**Handlers:**
+Handlers:
 
 - AddEvent
   - Purpose: Handles POST requests to add a new event.
@@ -166,3 +169,56 @@ This file contains HTTP handler functions for managing events and users in the s
     - The purpose of the endpoint.
     - The expected input and output formats.
     - The HTTP method and route.
+Backend unit test :
+
+Here is the same documentation without formatting:
+
+Test Suite Documentation: User and Event Controller Unit Tests
+
+Overview  
+This suite of unit tests is designed to validate the HTTP handlers in the User and Event controllers. The handlers are responsible for creating, retrieving, and deleting user and event records in the underlying MySQL database. The tests aim to ensure functional correctness, input validation, and proper error handling.
+
+init  
+Initializes the test environment. Sets Gin to test mode and initializes the global router. A database connection is created through setupTestDB() to be used during test execution.
+
+setupTestDB  
+Establishes a connection to the MySQL test database hosted on AWS RDS. If the connection fails, the function logs a fatal error and halts the test process.
+
+TestAddEvent  
+Purpose: Verifies that the /events/add endpoint correctly processes a valid event creation request.  
+Behavior: Sends a valid POST request and expects a 200 OK response, indicating successful insertion of the event into the database.
+
+TestGetEvent  
+Purpose: Validates the /events/get endpoint.  
+Behavior: Sends a GET request and expects a 200 OK response containing event data from the database.
+
+TestGetUsers  
+Purpose: Confirms that the /users/get endpoint correctly retrieves all user records.  
+Behavior: Sends a GET request and expects a 200 OK response with a JSON array of user objects.
+
+TestDecodeBase64  
+Purpose: Unit test for the decodeBase64 helper function.  
+Behavior:  
+- Verifies successful decoding of a valid base64 string.  
+- Asserts error handling on decoding an invalid base64 string.
+
+TestAddUserFailed  
+Purpose: Simulates a failure during user creation to test error handling in the /users/add endpoint.  
+Behavior: Sends a valid POST request and expects a 500 Internal Server Error due to failure in SQL execution, such as a missing or unreachable database.
+
+TestDeleteUser  
+Purpose: Validates the /users/delete endpoint with a valid user ID.  
+Behavior: Sends a DELETE request with id=123 and expects a 200 OK response, indicating successful execution of the deletion logic.
+
+TestDeleteUser_MissingID  
+Purpose: Ensures proper input validation when the required id parameter is not provided.  
+Behavior: Sends a DELETE request without the id parameter and expects a 400 Bad Request response.
+
+TestDeleteUser_NonExistentID  
+Purpose: Tests how the handler behaves when attempting to delete a non-existent user.  
+Behavior: Sends a DELETE request with a non-existent id value and expects a 200 OK response, assuming the handler does not check for rows affected.
+
+TestDeleteUser_InvalidID  
+Purpose: Verifies input validation when an empty or malformed id is provided.  
+Behavior: Sends a DELETE request with an empty id parameter (?id=) and expects a 400 Bad Request response due to invalid input.
+
