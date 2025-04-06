@@ -107,6 +107,41 @@ const docTemplate = `{
                 }
             }
         },
+        "/events/upload": {
+            "post": {
+                "description": "Uploads a file and stores it on the server",
+                "consumes": [
+                    "image/png"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Events"
+                ],
+                "summary": "Upload a file",
+                "parameters": [
+                    {
+                        "type": "file",
+                        "description": "Event Image",
+                        "name": "image",
+                        "in": "formData",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/users/add": {
             "post": {
                 "description": "Adds a new User to the system",

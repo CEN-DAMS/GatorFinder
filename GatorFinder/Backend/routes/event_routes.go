@@ -8,6 +8,7 @@ import (
 
 func RegisterEventRoutes(router *mux.Router) {
 	router.HandleFunc("/events/add", controllers.AddEvent).Methods("POST")
+	router.HandleFunc("/events/upload", controllers.UploadHandler).Methods("POST")
 	router.HandleFunc("/events/get", controllers.GetEvent).Methods("GET")
 	router.HandleFunc("/events/delete", controllers.DeleteEvent).Methods("DELETE")
 }

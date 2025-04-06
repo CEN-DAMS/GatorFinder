@@ -8,17 +8,21 @@ import (
 	"log"
 	"net/http"
 	"os"
+	//"context"
 
 	"github.com/gorilla/mux"
 	"github.com/gorilla/handlers"
-	_ "github.com/aws/aws-sdk-go-v2/config"
+	//"github.com/aws/aws-sdk-go-v2/config"
     _ "github.com/aws/aws-sdk-go-v2/feature/rds/auth"
 	_ "github.com/go-sql-driver/mysql"
+	//"github.com/aws/aws-sdk-go-v2/service/s3"
+	//"github.com/aws/aws-sdk-go-v2/aws"
 
     //"github.com/gin-contrib/cors"
 
 	httpSwagger "github.com/swaggo/http-swagger"
 )
+
 
 
 func main() {
@@ -49,7 +53,7 @@ func main() {
 						endDate DATE NULL,
 						startTime TIME NULL,
 						endTime TIME NULL,
-						image VARCHAR(64) NULL
+						image VARCHAR(5000) NULL
 	);`
 	sqlQueryToCreateUserTable :=
 		`
@@ -59,7 +63,7 @@ func main() {
 						email VARCHAR(64) NULL,
 						password VARCHAR(64) NULL
 	);`
-	//_, err = db.Exec("DROP TABLE events")
+	//_, err = db.Exec("DROP TABLE Events")
 	//_, err = db.Exec("DROP TABLE Users")
 	_, err = db.Exec(sqlQueryToCreateTable)
 

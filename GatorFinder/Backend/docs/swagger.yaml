@@ -96,6 +96,29 @@ paths:
       summary: Get event details
       tags:
       - Events
+  /events/upload:
+    post:
+      consumes:
+      - image/png
+      description: Uploads a file and stores it on the server
+      parameters:
+      - description: Event Image
+        in: formData
+        name: image
+        required: true
+        type: file
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Upload a file
+      tags:
+      - Events
   /users/add:
     post:
       consumes:

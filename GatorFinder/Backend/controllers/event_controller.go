@@ -4,16 +4,120 @@ import (
 	"database/sql"
 	"encoding/json"
 	"encoding/base64"
+	"bytes"
 	"fmt"
 	"log"
 	"net/http"
-
+	"context"
 	"backend/models" // Ensure correct import path
+	//"os"
+	"io"
 
 	_ "github.com/aws/aws-sdk-go-v2/aws"
 	_ "github.com/mattn/go-sqlite3"
+
+	"github.com/aws/aws-sdk-go-v2/config"
+    _ "github.com/aws/aws-sdk-go-v2/feature/rds/auth"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/aws/aws-sdk-go-v2/service/s3"
+	"github.com/aws/aws-sdk-go-v2/aws"
+	 "github.com/aws/aws-sdk-go-v2/credentials"
 )
 
+
+var (
+	bucketName = "event-images-gatorfinder"
+	region     = "us-east-2"
+	db         *sql.DB
+)
+
+func getS3Client() (*s3.Client, error) {
+	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(region))
+	if err != nil {
+		return nil, err
+	}
+	return s3.NewFromConfig(cfg), nil
+}
+
+func uploadToS3(file io.Reader, fileName string) (string, error) {
+	customProvider := credentials.NewStaticCredentialsProvider("AKIA6GSNGSWDAEXRFHXV", "KZJ7w0vmBn4xwQ3iEj1jw9pP6uVZMYLUA9ycsr1K", "")
+	cfg, err := config.LoadDefaultConfig(context.TODO(), config.WithRegion(region), config.WithCredentialsProvider(customProvider))
+	if err != nil {
+		return "", err
+	}
+
+
+	client := s3.NewFromConfig(cfg)
+
+
+	_, err = client.PutObject(context.TODO(), &s3.PutObjectInput{
+		Bucket: aws.String(bucketName),
+		Key:    aws.String(fileName),
+		Body:   file,
+	})
+	if err != nil {
+		return "", err
+	}
+
+	return fmt.Sprintf("https://%s.s3.%s.amazonaws.com/%s", bucketName, region, fileName), nil
+}
+
+func saveEvent(username, eventname, eventdescription, startDate, endDate, startTime, endTime, imageURL string) error {
+	
+	query := "INSERT INTO Events (username, eventname, eventdescription, startDate, endDate, startTime, endTime, image_url) VALUES (?, ?, ?, ?, ?, ?, ?, ?)"
+	_, err := db.Exec(query, username, eventname, eventdescription, startDate, endDate, startTime, endTime, imageURL)
+	return err
+}
+
+// Upload handler
+// @Summary Upload a file
+// @Tags Events
+// @Description Uploads a file and stores it on the server
+// @Accept image/png
+// @Produce json
+// @Param image formData file true "Event Image"
+// @Success 200 {object} map[string]string
+// @Router /events/upload [post]
+func UploadHandler(w http.ResponseWriter, r *http.Request) {
+
+	if r.Method != http.MethodPost {
+		http.Error(w, "Invalid request method", http.StatusMethodNotAllowed)
+		return
+	}
+	var event models.Event
+
+	// Decode JSON request
+
+	er := r.ParseMultipartForm(10 << 20) // 10MB max file size
+	if er != nil {
+		http.Error(w, "Unable to parse form", http.StatusBadRequest)
+		return
+	}
+
+	file, handler, err := r.FormFile("image")
+	var buf bytes.Buffer
+	if _, err := io.Copy(&buf, file); err != nil {
+		http.Error(w, "Error reading file:", http.StatusBadRequest)
+		return
+	}
+
+	if err != nil {
+		http.Error(w, "File upload error", http.StatusBadRequest)
+		return
+	}
+	defer file.Close()
+
+	imageURL, err := uploadToS3(bytes.NewReader(buf.Bytes()), handler.Filename)
+	if err != nil {
+
+		http.Error(w, imageURL, http.StatusInternalServerError)
+		return
+	}
+	event.ImageURL = imageURL
+
+	w.WriteHeader(http.StatusOK)
+	fmt.Fprintf(w, `{"message": "Upload successful", "image_url": "%s"}`, imageURL)
+}
 
 func decodeBase64(encodedString string) (string, error) {
 	decodedBytes, err := base64.StdEncoding.DecodeString(encodedString)
