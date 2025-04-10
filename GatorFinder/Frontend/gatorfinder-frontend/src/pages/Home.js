@@ -14,17 +14,13 @@ import {
   Card,
   CardContent,
   CardHeader,
-  Divider,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Fab,
-  IconButton
+  Divider
 } from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions, Fab } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
+import { IconButton } from '@mui/material';
 import axios from 'axios';
 
 const Home = () => {
@@ -38,21 +34,6 @@ const Home = () => {
   const [rawEventData, setRawEventData] = useState(null);
   const [showDebug, setShowDebug] = useState(false);
 
-  // New state for event creation and image file
-  const [newEvent, setNewEvent] = useState({
-    uid: 1,
-    username: "temp",
-    name: '',
-    description: '',
-    startDate: '',
-    endDate: '',
-    startTime: '',
-    endTime: '',
-    image: ''
-  });
-  const [imageFile, setImageFile] = useState(null);
-  const [openDialog, setOpenDialog] = useState(false);
-
   const filteredEvents = events.filter((event) =>
     [event.eventname, event.name, event.eventdescription, event.description, event.username]
       .filter(Boolean)
@@ -64,7 +45,6 @@ const Home = () => {
       user.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
       user.email?.toLowerCase().includes(searchTerm.toLowerCase())
   );
-
   const normalizeData = (data) => {
     if (!data) return [];
     
@@ -94,6 +74,7 @@ const Home = () => {
     try {
       const response = await axios.get("http://localhost:8080/events/get");
       console.log("Events API response:", response.data);
+    
       setRawEventData(response.data);
       
       const normalizedData = normalizeData(response.data);
@@ -102,7 +83,6 @@ const Home = () => {
       setEvents(normalizedData);
       setDisplayType('events');
 
-      // This example posts the first event as a demonstration
       if (normalizedData.length > 0) {
         const eventToPost = { ...normalizedData[0] };
         
@@ -140,8 +120,10 @@ const Home = () => {
     try {
       const response = await axios.get("http://localhost:8080/users/get");
       console.log("Users API response:", response.data);
+      
       const normalizedData = normalizeData(response.data);
       console.log("Normalized users data:", normalizedData);
+      
       setUsers(normalizedData);
       setDisplayType('users');
     } catch (err) {
@@ -153,53 +135,38 @@ const Home = () => {
     }
   };
 
-  // Function to upload image and return URL
-  const uploadImage = async (file) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    try {
-      const response = await axios.post("http://localhost:8080/upload-image", formData, {
-        headers: { "Content-Type": "multipart/form-data" }
-      });
-      return response.data.url;
-    } catch (err) {
-      console.error("Image upload failed:", err);
-      return "";
-    }
-  };
+  
 
+  const [newEvent, setNewEvent] = useState({
+    uid: 1,
+    username: "temp",
+    name: '',
+    description: '',
+    startDate: '',
+    endDate: '',
+    startTime: '',
+    endTime: '',
+    image: "temp"
+  });
+ 
+  const [openDialog, setOpenDialog] = useState(false);
   const handleCreateEvent = async () => {
     console.log("Posting event:", newEvent);
-    setLoading(true);
     try {
-      let imageURL = "";
-      // If an image file is selected, upload it to get the URL
-      if (imageFile) {
-        imageURL = await uploadImage(imageFile);
-      }
-      // Create event data with the image URL (if available)
-      const eventData = { ...newEvent, image: imageURL };
-      await axios.post("http://localhost:8080/events/add", eventData);
+      await axios.post("http://localhost:8080/events/add", newEvent);
       setOpenDialog(false);
-      // Reset event form and image file
       setNewEvent({
-        uid: 1,
-        username: "temp",
         name: '',
         description: '',
         startDate: '',
-        endDate: '',
         startTime: '',
+        endDate: '',
         endTime: '',
         image: ''
       });
-      setImageFile(null);
       fetchEvents();
     } catch (err) {
-      console.error("Failed to create event:", err);
       setError("Failed to create event");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -215,21 +182,32 @@ const Home = () => {
     return (
       <Card 
         key={event.id || index}
-        sx={{ mb: 2, boxShadow: 3, borderRadius: 2, overflow: 'hidden' }}
+        sx={{ 
+          mb: 2, 
+          boxShadow: 3,
+          borderRadius: 2,
+          overflow: 'hidden'
+        }}
       >
         <CardHeader
-          title={event.eventname || event.name || 'Untitled Event'}
+          title={event.eventname || 'Untitled Event'}
           subheader={`Posted by: ${event.username || 'Unknown'}`}
-          sx={{ backgroundColor: '#f5f5f5', borderBottom: '1px solid #e0e0e0' }}
+          sx={{ 
+            backgroundColor: '#f5f5f5',
+            borderBottom: '1px solid #e0e0e0'
+          }}
         />
         <CardContent>
           <Typography variant="body1" sx={{ mb: 2 }}>
-            {event.eventdescription || event.description || 'No description available'}
+            {event.eventdescription || 'No description available'}
           </Typography>
+          
           <Divider sx={{ my: 2 }} />
+          
           <Typography variant="subtitle2" color="text.secondary">
             Event Details:
           </Typography>
+          
           <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mt: 1 }}>
             {event.startDate && (
               <Typography variant="body2">
@@ -257,6 +235,7 @@ const Home = () => {
               </Typography>
             )}
           </Box>
+          
           {event.image && (
             <Box sx={{ mt: 2 }}>
               <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
@@ -264,8 +243,13 @@ const Home = () => {
               </Typography>
               <img 
                 src={event.image} 
-                alt={event.eventname || event.name || 'Event'} 
-                style={{ maxWidth: '100%', maxHeight: '200px', objectFit: 'contain', borderRadius: '4px' }} 
+                alt={event.eventname || 'Event'} 
+                style={{ 
+                  maxWidth: '100%', 
+                  maxHeight: '200px',
+                  objectFit: 'contain',
+                  borderRadius: '4px'
+                }} 
               />
             </Box>
           )}
@@ -278,12 +262,19 @@ const Home = () => {
     return (
       <Card 
         key={user.id || index}
-        sx={{ mb: 2, boxShadow: 3, borderRadius: 2 }}
+        sx={{ 
+          mb: 2, 
+          boxShadow: 3,
+          borderRadius: 2
+        }}
       >
         <CardHeader
           title={user.name || 'Unknown User'}
           subheader={user.email || 'No email available'}
-          sx={{ backgroundColor: '#f5f5f5', borderBottom: '1px solid #e0e0e0' }}
+          sx={{ 
+            backgroundColor: '#f5f5f5',
+            borderBottom: '1px solid #e0e0e0'
+          }}
         />
         <CardContent>
           <Box sx={{ mt: 1 }}>
@@ -310,21 +301,45 @@ const Home = () => {
               component="div"
               sx={{ fontWeight: 'bold', display: 'flex', alignItems: 'center' }}
             >
-              <span role="img" aria-label="alligator" style={{ fontSize: '2.5rem', marginRight: '8px' }}>
+              <span
+                role="img"
+                aria-label="alligator"
+                style={{ fontSize: '2.5rem', marginRight: '8px' }}
+              >
                 🐊
               </span>
               GatorFinder
             </Typography>
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <IconButton component={Link} to="/profile" sx={{ color: '#000000' }} aria-label="Profile">
+            <IconButton 
+              component={Link} 
+              to="/profile" 
+              sx={{ color: '#000000' }}
+              aria-label="Profile"
+            >
               <AccountBoxIcon fontSize="large" />
             </IconButton>
           </Box>
         </Toolbar>
       </AppBar>
-      <Container maxWidth="md" sx={{ mt: 4, mb: 4, p: 0 }}>
-        <Box sx={{ backgroundColor: '#f5f5f5', p: 3, borderRadius: 2, boxShadow: 3, mb: 3 }}>
+      <Container 
+        maxWidth="md" 
+        sx={{ 
+          mt: 4, 
+          mb: 4,
+          p: 0
+        }}
+      >
+        <Box 
+          sx={{ 
+            backgroundColor: '#f5f5f5',
+            p: 3, 
+            borderRadius: 2,
+            boxShadow: 3,
+            mb: 3
+          }}
+        >
           <Box sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
             <TextField
               fullWidth
@@ -337,6 +352,7 @@ const Home = () => {
               }}
             />
           </Box>
+          
           <Box sx={{ display: 'flex', mb: 3 }}>
             <Button 
               variant={displayType === 'events' ? "contained" : "outlined"} 
@@ -365,12 +381,14 @@ const Home = () => {
               ) : 'Show Users'}
             </Button>
           </Box>
+          
           {error && (
             <Alert severity="error" sx={{ mb: 2 }}>
               {error}
             </Alert>
           )}
         </Box>
+        
         {loading && !error ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', my: 4 }}>
             <CircularProgress />
@@ -378,14 +396,23 @@ const Home = () => {
         ) : (
           <>
             {displayType === 'events' && rawEventData && showDebug && (
-              <Card sx={{ mb: 4, boxShadow: 3, borderRadius: 2 }}>
+                <Card sx={{ mb: 4, boxShadow: 3, borderRadius: 2 }}>
                 <CardHeader 
                   title="Raw JSON Data" 
-                  sx={{ backgroundColor: '#e3f2fd', borderBottom: '1px solid #bbdefb' }}
+                  sx={{ 
+                    backgroundColor: '#e3f2fd',
+                    borderBottom: '1px solid #bbdefb'
+                  }}
                 />
                 <CardContent>
                   <Box 
-                    sx={{ p: 2, backgroundColor: '#f5f5f5', borderRadius: 1, maxHeight: '300px', overflow: 'auto' }}
+                    sx={{ 
+                      p: 2, 
+                      backgroundColor: '#f5f5f5', 
+                      borderRadius: 1,
+                      maxHeight: '300px',
+                      overflow: 'auto'
+                    }}
                   >
                     <pre style={{ margin: 0, whiteSpace: 'pre-wrap', wordBreak: 'break-word' }}>
                       {JSON.stringify(rawEventData, null, 2)}
@@ -414,13 +441,19 @@ const Home = () => {
           </>
         )}
       </Container>
+
+      {/* Snackbar for notifications */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={6000}
         onClose={handleCloseSnackbar}
         anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
       >
-        <Alert onClose={handleCloseSnackbar} severity={snackbar.severity} sx={{ width: '100%' }}>
+        <Alert 
+          onClose={handleCloseSnackbar} 
+          severity={snackbar.severity} 
+          sx={{ width: '100%' }}
+        >
           {snackbar.message}
         </Alert>
       </Snackbar>
@@ -433,107 +466,87 @@ const Home = () => {
         <AddIcon />
       </Fab>
       <Dialog open={openDialog} onClose={() => setOpenDialog(false)} fullWidth maxWidth="sm">
-        <DialogTitle>Create Event</DialogTitle>
-        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
-          <TextField
-            label="Event Name"
-            value={newEvent.name}
-            onChange={(e) => setNewEvent({ ...newEvent, name: e.target.value })}
-            fullWidth
-          />
-          <TextField
-            label="Description"
-            value={newEvent.description}
-            onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
-            multiline
-            rows={3}
-            fullWidth
-          />
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <DialogTitle>Create Event</DialogTitle>
+          <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
             <TextField
-              label="Start Date"
-              type="date"
-              InputLabelProps={{ shrink: true }}
-              value={newEvent.startDate}
-              onChange={(e) => setNewEvent({ ...newEvent, startDate: e.target.value })}
-              fullWidth
+              label="Event Name"
+              value={newEvent.name}
+              onChange={(e) => setNewEvent({ ...newEvent, name: e.target.value })}
             />
             <TextField
-              label="End Date"
-              type="date"
-              InputLabelProps={{ shrink: true }}
-              value={newEvent.endDate}
-              onChange={(e) => setNewEvent({ ...newEvent, endDate: e.target.value })}
-              fullWidth
+              label="Description"
+              value={newEvent.description}
+              onChange={(e) => setNewEvent({ ...newEvent, description: e.target.value })}
+              multiline
+              rows={3}
             />
-          </Box>
-          <Box sx={{ display: 'flex', gap: 2 }}>
-            <TextField
-              label="Start Time"
-              type="time"
-              InputLabelProps={{ shrink: true }}
-              value={newEvent.startTime}
-              onChange={(e) => setNewEvent({ ...newEvent, startTime: e.target.value })}
-              fullWidth
-            />
-            <TextField
-              label="End Time"
-              type="time"
-              InputLabelProps={{ shrink: true }}
-              value={newEvent.endTime}
-              onChange={(e) => setNewEvent({ ...newEvent, endTime: e.target.value })}
-              fullWidth
-            />
-          </Box>
-          {/* Image Upload Button */}
-          <Button variant="outlined" component="label" sx={{ textTransform: 'none' }}>
-            Upload Event Image
-            <input 
-              type="file" 
-              accept="image/*" 
-              hidden
-              onChange={(e) => {
-                if(e.target.files && e.target.files[0]){
-                  setImageFile(e.target.files[0]);
-                }
-              }}
-            />
-          </Button>
-          {imageFile && (
-            <Typography variant="body2">
-              Selected File: {imageFile.name}
-            </Typography>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
-          <Button onClick={handleCreateEvent} variant="contained" sx={{ textTransform: 'none' }}>
-            Create
-          </Button>
-        </DialogActions>
-      </Dialog>
-      <Button
-        onClick={() => setShowDebug(prev => !prev)}
-        sx={{
-          position: 'fixed',
-          bottom: 32,
-          left: 32,
-          backgroundColor: 'rgba(255, 89, 0, 0.2)',
-          color: '#ffffff',
-          border: '1px solid rgba(255, 255, 255, 0.3)',
-          backdropFilter: 'blur(4px)',
-          fontSize: '0.85rem',
-          padding: '6px 12px',
-          borderRadius: '8px',
-          textTransform: 'none',
-          '&:hover': {
-            backgroundColor: 'rgba(255, 183, 0, 0.1)',
-            borderColor: '#ffffff',
-          },
-        }}
-      >
-        {showDebug ? 'Hide Debug' : 'Show Debug'}
-      </Button>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Start Date"
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                value={newEvent.startDate}
+                onChange={(e) => setNewEvent({ ...newEvent, startDate: e.target.value })}
+                fullWidth
+              />
+              <TextField
+                label="End Date"
+                type="date"
+                InputLabelProps={{ shrink: true }}
+                value={newEvent.endDate}
+                onChange={(e) => setNewEvent({ ...newEvent, endDate: e.target.value })}
+                fullWidth
+              />
+            </Box>
+            <Box sx={{ display: 'flex', gap: 2 }}>
+              <TextField
+                label="Start Time"
+                type="time"
+                InputLabelProps={{ shrink: true }}
+                value={newEvent.startTime}
+                onChange={(e) => setNewEvent({ ...newEvent, startTime: e.target.value })}
+                fullWidth
+              />
+              <TextField
+                label="End Time"
+                type="time"
+                InputLabelProps={{ shrink: true }}
+                value={newEvent.endTime}
+                onChange={(e) => setNewEvent({ ...newEvent, endTime: e.target.value })}
+                fullWidth
+              />
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenDialog(false)}>Cancel</Button>
+            <Button onClick={handleCreateEvent} variant="contained" sx={{ textTransform: 'none' }}>
+              Create
+            </Button>
+          </DialogActions>
+        </Dialog>
+        <Button
+          onClick={() => setShowDebug(prev => !prev)}
+          sx={{
+            position: 'fixed',
+            bottom: 32,
+            left: 32,
+            backgroundColor: 'rgba(255, 89, 0, 0.2)',
+            color: '#ffffff',
+            border: '1px solid rgba(255, 255, 255, 0.3)',
+            backdropFilter: 'blur(4px)',
+            fontSize: '0.85rem',
+            padding: '6px 12px',
+            borderRadius: '8px',
+            textTransform: 'none',
+            '&:hover': {
+              backgroundColor: 'rgba(255, 183, 0, 0.1)',
+              borderColor: '#ffffff',
+            },
+          }}
+        >
+          {showDebug ? 'Hide Debug' : 'Show Debug'}
+        </Button>
+
     </>
   );
 };
