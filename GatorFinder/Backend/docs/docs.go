@@ -107,6 +107,96 @@ const docTemplate = `{
                 }
             }
         },
+        "/login/requestOtp": {
+            "get": {
+                "description": "Generates and sends OTP to the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OTP"
+                ],
+                "summary": "Request OTP",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"user@example.com\"",
+                        "description": "Email or User Identifier",
+                        "name": "email",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OTP sent successfully",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "400": {
+                        "description": "Missing or invalid parameters",
+                        "schema": {
+                            "type": "object",
+                            "additionalProperties": {
+                                "type": "string"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/login/verifyOtp": {
+            "get": {
+                "description": "Verifies the OTP provided by the user",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "OTP"
+                ],
+                "summary": "Verify OTP",
+                "parameters": [
+                    {
+                        "type": "string",
+                        "example": "\"123456\"",
+                        "description": "OTP",
+                        "name": "otp",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OTP verification success",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.VerifyOTPResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "OTP is required",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.VerifyOTPResponse"
+                        }
+                    },
+                    "401": {
+                        "description": "Invalid OTP",
+                        "schema": {
+                            "$ref": "#/definitions/controllers.VerifyOTPResponse"
+                        }
+                    }
+                }
+            }
+        },
         "/users/add": {
             "post": {
                 "description": "Adds a new User to the system",
@@ -201,6 +291,14 @@ const docTemplate = `{
         }
     },
     "definitions": {
+        "controllers.VerifyOTPResponse": {
+            "type": "object",
+            "properties": {
+                "message": {
+                    "type": "string"
+                }
+            }
+        },
         "models.Event": {
             "type": "object",
             "properties": {
