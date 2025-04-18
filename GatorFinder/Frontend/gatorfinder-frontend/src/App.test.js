@@ -36,3 +36,12 @@ describe('Navigation between Login and Signup pages', () => {
     expect(screen.getByRole('heading', { name: /login/i })).toBeInTheDocument();
   });
 });
+
+test('navigates to profile', async () => {
+  window.history.pushState({}, 'Home Page', '/home');
+  render(<App />);
+  const profileButton = screen.getByLabelText(/Profile/i);
+  fireEvent.click(profileButton);
+  const yourProfileText = await screen.findByText(/Your Profile/i);
+  expect(yourProfileText).toBeInTheDocument();
+});
