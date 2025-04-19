@@ -1,4 +1,9 @@
 definitions:
+  controllers.VerifyOTPResponse:
+    properties:
+      message:
+        type: string
+    type: object
   models.Event:
     properties:
       datePosted:
@@ -96,6 +101,66 @@ paths:
       summary: Get event details
       tags:
       - Events
+  /login/requestOtp:
+    get:
+      consumes:
+      - application/json
+      description: Generates and sends OTP to the user
+      parameters:
+      - description: Email or User Identifier
+        example: '"user@example.com"'
+        in: query
+        name: email
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OTP sent successfully
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Missing or invalid parameters
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Request OTP
+      tags:
+      - OTP
+  /login/verifyOtp:
+    get:
+      consumes:
+      - application/json
+      description: Verifies the OTP provided by the user
+      parameters:
+      - description: OTP
+        example: '"123456"'
+        in: query
+        name: otp
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OTP verification success
+          schema:
+            $ref: '#/definitions/controllers.VerifyOTPResponse'
+        "400":
+          description: OTP is required
+          schema:
+            $ref: '#/definitions/controllers.VerifyOTPResponse'
+        "401":
+          description: Invalid OTP
+          schema:
+            $ref: '#/definitions/controllers.VerifyOTPResponse'
+      summary: Verify OTP
+      tags:
+      - OTP
   /users/add:
     post:
       consumes:
@@ -154,6 +219,23 @@ paths:
               $ref: '#/definitions/models.User'
             type: array
       summary: Get user details
+      tags:
+      - Users
+  /users/getcalender:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves calender events from the uf calender
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+      summary: Get scrape details
       tags:
       - Users
 swagger: "2.0"
