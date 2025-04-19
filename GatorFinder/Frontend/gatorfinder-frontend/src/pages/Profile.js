@@ -14,6 +14,7 @@ import {
 } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import UploadIcon from '@mui/icons-material/Upload';
+import axios from 'axios';
 
 const Profile = () => {
   const [profileData, setProfileData] = useState({
@@ -35,6 +36,20 @@ const Profile = () => {
       setProfileData({ ...profileData, image: imgUrl });
     }
   };
+
+  const handleSave = async () => {
+    try {
+      const response = await axios.put('http://localhost:8080/api/user/profile', profileData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      alert('Profile saved successfully!');
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      alert('Failed to save profile.');
+    }
+  };  
 
   return (
     <>
@@ -125,10 +140,10 @@ const Profile = () => {
             rows={3}
             onChange={handleChange('bio')}
           />
-
           <Button
             variant="contained"
             sx={{ mt: 2, textTransform: 'none' }}
+            onClick={handleSave}
           >
             Save Changes
           </Button>
