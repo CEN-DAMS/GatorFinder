@@ -14,7 +14,7 @@ type VerifyOTPResponse struct {
 	Message string `json:"message"`
 }
 
-var otpStorage = make(map[string]string) // OTP storage (you can associate OTP with user identifier like email or phone)
+var correctOTP string
 
 // Generate a random 6-digit OTP
 func generateOTP() string {
@@ -24,11 +24,9 @@ func generateOTP() string {
 }
 
 // Verify OTP (without DB) - stored in-memory
-func verifyOTP(userIdentifier, otp string) bool {
-	storedOtp, exists := otpStorage[userIdentifier]
-	fmt.Println(exists)
-	fmt.Println(otpStorage)
-	return exists && storedOtp == otp
+func verifyOTP(otp string) bool {
+
+	return correctOTP == otp
 }
 
 func sendEmail(email, otp string) {
@@ -56,7 +54,7 @@ func CreateOtphandler(w http.ResponseWriter, r *http.Request) {
 	otp := generateOTP()
 
 	// Store the OTP in memory with user identifier
-	otpStorage[userIdentifier] = otp
+	correctOTP = otp
 
 	// For demonstration, we'll log the OTP.
 	fmt.Printf("Generated OTP for %s: %s\n", userIdentifier, otp)
@@ -80,6 +78,7 @@ func CreateOtphandler(w http.ResponseWriter, r *http.Request) {
 func VerifyOtpHandler(w http.ResponseWriter, r *http.Request) {
 	// Get the OTP from the query string
 	otp := r.URL.Query().Get("otp")
+
 	fmt.Println("HERE")
 	if otp == "" {
 		// If no OTP is provided in the query parameter, return an error
@@ -88,7 +87,7 @@ func VerifyOtpHandler(w http.ResponseWriter, r *http.Request) {
 	}
 
 	// Verify the OTP
-	if verifyOTP("sprabhu1@ufl.edu", otp) {
+	if verifyOTP(otp) {
 		// If OTP is valid, send a success response
 		w.WriteHeader(http.StatusOK)
 		response := VerifyOTPResponse{Message: "OTP verified successfully"}
