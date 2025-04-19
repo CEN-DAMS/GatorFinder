@@ -288,6 +288,32 @@ const docTemplate = `{
                     }
                 }
             }
+        },
+        "/users/getcalender": {
+            "get": {
+                "description": "Retrieves calender events from the uf calender",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Users"
+                ],
+                "summary": "Get scrape details",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/models.User"
+                            }
+                        }
+                    }
+                }
+            }
         }
     },
     "definitions": {

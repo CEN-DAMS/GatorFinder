@@ -221,4 +221,21 @@ paths:
       summary: Get user details
       tags:
       - Users
+  /users/getcalender:
+    get:
+      consumes:
+      - application/json
+      description: Retrieves calender events from the uf calender
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/models.User'
+            type: array
+      summary: Get scrape details
+      tags:
+      - Users
 swagger: "2.0"
