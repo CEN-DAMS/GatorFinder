@@ -7,12 +7,27 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 
 	"backend/models" // Ensure correct import path
 
 	_ "github.com/aws/aws-sdk-go-v2/aws"
+	"github.com/playwright-community/playwright-go"
+
 	_ "github.com/mattn/go-sqlite3"
 )
+
+type InstagramData struct {
+	GraphQL struct {
+		User struct {
+			EdgeOwnerToTimelineMedia struct {
+				Edges []struct {
+					Node Post `json:"node"`
+				} `json:"edges"`
+			} `json:"edge_owner_to_timeline_media"`
+		} `json:"user"`
+	} `json:"graphql"`
+}
 
 func decodeBase64(encodedString string) (string, error) {
 	decodedBytes, err := base64.StdEncoding.DecodeString(encodedString)
@@ -20,6 +35,18 @@ func decodeBase64(encodedString string) (string, error) {
 		return "", fmt.Errorf("decoding error: %w", err)
 	}
 	return string(decodedBytes), nil
+}
+
+type Dictionary map[string]string
+
+type RecipeSpecs struct {
+	difficulty, prepTime, cookingTime, servingSize, priceTier string
+}
+
+type Recipe struct {
+	url, name      string
+	ingredients    []Dictionary
+	specifications RecipeSpecs
 }
 
 // Sample Events list
@@ -75,6 +102,16 @@ func AddEvent(w http.ResponseWriter, r *http.Request) {
 	// Send success response
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"message": "Event received successfully"})
+}
+
+var foodKeywords = []string{
+	"free food", "pizza", "snacks", "refreshments",
+	"lunch", "dinner", "coffee", "cookies", "food provided",
+}
+
+type Post struct {
+	Caption  string
+	ImageURL string
 }
 
 // @Summary Get event details
@@ -322,5 +359,93 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 	json.NewEncoder(w).Encode(map[string]string{"message": "User received successfully"})
+
+}
+
+// @Summary Get scrape details
+// @Description Retrieves calender events from the uf calender
+// @Tags  Users
+// @Accept  json
+// @Produce  json
+// @Success 200 {array} models.User
+// @Router /users/getcalender [get]
+func GetCalenderEvents(w http.ResponseWriter, r *http.Request) {
+	pw, err := playwright.Run()
+	length := 0
+	if err != nil {
+		log.Fatalf("could not start Playwright: %v", err)
+	}
+	defer pw.Stop()
+
+	browser, err := pw.Chromium.Launch(playwright.BrowserTypeLaunchOptions{
+		Headless: playwright.Bool(true), // Headless mode (no GUI)
+	})
+	if err != nil {
+		log.Fatalf("could not launch browser: %v", err)
+	}
+	defer browser.Close()
+
+	context, err := browser.NewContext(playwright.BrowserNewContextOptions{
+		UserAgent: playwright.String("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"),
+	})
+	if err != nil {
+		log.Fatalf("could not create context: %v", err)
+	}
+	page, err := context.NewPage()
+	if err != nil {
+		log.Fatalf("could not create page: %v", err)
+	}
+
+	_, err = page.Goto("https://calendar.ufl.edu/day")
+	if err != nil {
+		log.Fatalf("could not navigate: %v", err)
+	}
+
+	time.Sleep(1 * time.Second)
+
+	summary, err := page.Locator(".lw_events_summary").AllTextContents()
+	if err != nil {
+		log.Fatalf("could not extract event summary: %v", err)
+	}
+
+	time, err := page.Locator(".lw_events_time").AllTextContents()
+	if err != nil {
+		log.Fatalf("could not extract event time: %v", err)
+	}
+
+	title, err := page.Locator(".lw_events_title").AllTextContents()
+	if err != nil {
+		log.Fatalf("could not extract event title: %v", err)
+	}
+
+	// Ensure we have the same number of entries in each list
+	if len(summary) != len(time) || len(time) != len(title) {
+		length = max(len(summary), len(time), len(title))
+	}
+
+	// Store events as a list of lists containing [summary, time, title]
+	var events [][]string
+	for i := 0; i < length; i++ {
+		summaryValue := ""
+		// Check if summary is empty, and if so, set it to ""
+		if i >= len(summary) || summary[i] == "" {
+			summaryValue = ""
+		} else {
+			summaryValue = summary[i]
+		}
+
+		// Create a new event and append it to the events list
+		event := []string{summaryValue, time[i], title[i]}
+		events = append(events, event)
+	}
+
+	// Print the events
+	log.Println("Extracted events:")
+	for i, event := range events {
+		fmt.Printf("Event #%d: [Summary: %s, Time: %s, Title: %s]\n", i+1, event[0], event[1], event[2])
+	}
+	fmt.Println(len(events))
+	log.Println("Scraping and extraction complete.")
+	json.NewEncoder(w).Encode(events)
 
 }

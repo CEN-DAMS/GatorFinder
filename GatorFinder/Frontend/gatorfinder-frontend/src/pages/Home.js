@@ -30,6 +30,7 @@ import axios from 'axios';
 const Home = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [events, setEvents] = useState([]);
+  const [calenderEvents, setcalenderEvents] = useState([]);
   const [users, setUsers] = useState([]);
   const [displayType, setDisplayType] = useState('events');
   const [error, setError] = useState(null);
@@ -37,6 +38,7 @@ const Home = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [rawEventData, setRawEventData] = useState(null);
   const [showDebug, setShowDebug] = useState(false);
+
   const [newEvent, setNewEvent] = useState({
     uid: 1,
     username: "temp",
@@ -51,10 +53,11 @@ const Home = () => {
   const [imageFile, setImageFile] = useState(null);
   const [openDialog, setOpenDialog] = useState(false);
 
-  const filteredEvents = events.filter((event) =>
-    [event.eventname, event.name, event.eventdescription, event.description, event.username]
+  const filteredEvents = calenderEvents.filter((event) =>
+    [event[2]]
       .filter(Boolean)
-      .some(field => field.toLowerCase().includes(searchTerm.toLowerCase()))
+      .some(field => field.toLowerCase().includes(searchTerm.toLowerCase())),
+      console.log(events)
   );
 
   const filteredUsers = users.filter(
@@ -85,8 +88,12 @@ const Home = () => {
     setError(null);
     try {
       const response = await axios.get("http://localhost:8080/events/get");
+      const scrapperResponse = await axios.get("http://localhost:8080//users/getcalender");
       console.log("Events API response:", response.data);
+      console.log("Scrapper API response:", scrapperResponse.data);
+    
       setRawEventData(response.data);
+      setcalenderEvents(scrapperResponse.data)
       const normalizedData = normalizeData(response.data);
       console.log("Normalized events data:", normalizedData);
       setEvents(normalizedData);
@@ -172,73 +179,73 @@ const Home = () => {
     fetchEvents();
   }, []);
 
-  const renderEventCard = (event, index) => {
-    return (
-      <Card 
-        key={event.id || index}
-        sx={{ mb: 2, boxShadow: 3, borderRadius: 2, overflow: 'hidden' }}
-      >
-        <CardHeader
-          title={event.eventname || event.name || 'Untitled Event'}
-          subheader={`Posted by: ${event.username || 'Unknown'}`}
-          sx={{ backgroundColor: '#f5f5f5', borderBottom: '1px solid #e0e0e0' }}
-        />
-        <CardContent>
-          <Typography variant="body1" sx={{ mb: 2 }}>
-            {event.eventdescription || event.description || 'No description available'}
-          </Typography>
-          <Divider sx={{ my: 2 }} />
-          <Typography variant="subtitle2" color="text.secondary">
-            Event Details:
-          </Typography>
-          <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mt: 1 }}>
-            {event.startDate && (
-              <Typography variant="body2">
-                <strong>Start Date:</strong> {event.startDate}
-              </Typography>
-            )}
-            {event.endDate && (
-              <Typography variant="body2">
-                <strong>End Date:</strong> {event.endDate}
-              </Typography>
-            )}
-            {event.startTime && (
-              <Typography variant="body2">
-                <strong>Start Time:</strong> {event.startTime}
-              </Typography>
-            )}
-            {event.endTime && (
-              <Typography variant="body2">
-                <strong>End Time:</strong> {event.endTime}
-              </Typography>
-            )}
-            {event.created && (
-              <Typography variant="body2">
-                <strong>Created:</strong> {event.created}
-              </Typography>
-            )}
-          </Box>
-          {event.image && (
-            <Box sx={{ mt: 2 }}>
-              <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
-                Event Image:
-              </Typography>
-              <img 
-                src={event.image} 
-                alt={event.eventname || event.name || 'Event'} 
-                style={{
-                  maxWidth: '100%', 
-                  maxHeight: '200px', 
-                  objectFit: 'contain', 
-                  borderRadius: '4px'
-                }} 
-              />
+  const renderEventCard = (calendarEvents, index) => {
+    // Check if the event exists and is in the correct format
+    const event = calendarEvents[index];
+    
+    if (event && Array.isArray(event) && event.length === 3) {
+      const [description = '', time = '', title = ''] = event;  // Default to empty strings if missing
+      
+      return (
+        <Card 
+          key={index} // Use the index as the key
+          sx={{ 
+            mb: 2, 
+            boxShadow: 3,
+            borderRadius: 2,
+            overflow: 'hidden'
+          }}
+        >
+          <CardHeader
+            title={title || 'Untitled Event'}
+            subheader={`Event Time: ${time || 'Unknown time'}`}
+            sx={{ 
+              backgroundColor: '#f5f5f5',
+              borderBottom: '1px solid #e0e0e0'
+            }}
+          />
+          <CardContent>
+            <Typography variant="body1" sx={{ mb: 2 }}>
+              {description || 'No description available'}
+            </Typography>
+            
+            <Divider sx={{ my: 2 }} />
+            
+            
+            
+            <Box sx={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 2, mt: 1 }}>
+              {time && (
+                <Typography variant="body2">
+                  <strong>Event Time:</strong> {time}
+                </Typography>
+              )}
             </Box>
-          )}
-        </CardContent>
-      </Card>
-    );
+            {event.image && (
+      <Box sx={{ mt: 2 }}>
+        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
+          Event Image:
+        </Typography>
+        <img
+          src={event.image}
+          alt={event.eventname || 'Event'}
+          style={{
+            maxWidth: '100%',
+            maxHeight: '200px',
+            objectFit: 'contain',
+            borderRadius: '4px',
+          }}
+        />
+      </Box>
+            )}
+              </CardContent>
+        </Card>
+      );
+    } else {
+      console.error("Invalid event data at index:", index, event);
+      return null; // Return null or an error message if data is invalid
+    }
   };
+  
 
   const renderUserCard = (user, index) => {
     return (
@@ -360,7 +367,7 @@ const Home = () => {
             )}
             <Box>
               {displayType === 'events' && filteredEvents.length > 0 ? (
-                filteredEvents.map((event, index) => renderEventCard(event, index))
+                filteredEvents.map((calendarEvents, index) => renderEventCard(calenderEvents, index))
               ) : displayType === 'events' && !loading ? (
                 <Alert severity="info">
                   No events found. Click "Show Events & Post" to fetch events.

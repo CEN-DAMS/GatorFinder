@@ -1,0 +1,53 @@
+/* General Container for OTP */
+.otp-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    
+    background-color: #f7f7f7;
+    font-family: 'Arial', sans-serif;
+  }
+  
+  /* Heading Style */
+  .otp-heading {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+    font-weight: bold;
+  }
+  
+  /* OTP Input Boxes */
+  .otp-box {
+    width: 100px;
+    height: 60px;
+    text-align: center;
+    font-size: 44px;
+    border: 2px solid #ccc;
+    border-radius: 8px;
+    margin: 0 10px;
+    outline: none;
+    transition: all 0.3s ease;
+  }
+  
+  /* OTP Input Focus Style */
+  .otp-box:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+  
+  /* Separator Styling */
+  .otp-container span {
+    font-size: 24px;
+    margin: 0 10px;
+    color: #333;
+  }
+  
+  /* OTP Display Text */
+  .otp-display {
+    font-size: 18px;
+    color: #555;
+    margin-top: 20px;
+  }
+  
