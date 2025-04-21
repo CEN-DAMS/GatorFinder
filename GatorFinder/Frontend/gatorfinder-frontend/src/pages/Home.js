@@ -275,7 +275,7 @@ const Home = () => {
 
   return (
     <>
-      <AppBar position="static" sx={{ backgroundColor: '#ff9800' }}>
+      <AppBar position="static" sx={{ background: 'linear-gradient(45deg, #ff9800 30%, #ffb300 90%)', boxShadow: 4  }}>
         <Toolbar>
           <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
             <Typography
