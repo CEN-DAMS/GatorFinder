@@ -12,20 +12,17 @@ function OTPPage() {
   const handleChange = async (otp) => {
      let response;
     setOtp(otp);    
-    if (otp.length == 6) {
-       response = await axios.get(`http://localhost:8080/login/verifyOtp?otp=${otp}`)
-      console.log(response.status);
-    if(response.status =='200'){
-      console.log('hi');
-    navigate('/home') ; 
+    if (otp.length === 6) {
+      try {
+        const response = await axios.get(`http://localhost:8080/login/verifyOtp?otp=${otp}`);
+        if (response.status === 200) {
+          navigate('/home');
+        }
+      } catch (err) {
+        console.error(err);
+        setError('Wrong OTP code, try again!');
+      }
     }
-    else{
-      setError('Only ufl.edu email addresses are allowed.');
-    }
-  }
-  else{
-    setError('');
-  }
   };
 
   return (
