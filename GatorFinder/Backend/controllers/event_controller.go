@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"time"
 	"os"
-	//"bufio"
+	"time"
 
+	//"bufio"
 
 	"backend/models" // Ensure correct import path
 
@@ -20,18 +20,6 @@ import (
 	_ "github.com/mattn/go-sqlite3"
 	_ "golang.org/x/term"
 )
-
-type InstagramData struct {
-	GraphQL struct {
-		User struct {
-			EdgeOwnerToTimelineMedia struct {
-				Edges []struct {
-					Node Post `json:"node"`
-				} `json:"edges"`
-			} `json:"edge_owner_to_timeline_media"`
-		} `json:"user"`
-	} `json:"graphql"`
-}
 
 func decodeBase64(encodedString string) (string, error) {
 	decodedBytes, err := base64.StdEncoding.DecodeString(encodedString)
@@ -518,7 +506,6 @@ func GetCalenderEvents(w http.ResponseWriter, r *http.Request) {
 
 	// log.Println("✅ Saved login session to state.json")
 
-
 	// Replace with the actual Instagram event page URL
 	url := "https://www.instagram.com/ufgatornights/"
 	_, err = page.Goto(url)
@@ -584,9 +571,6 @@ func GetCalenderEvents(w http.ResponseWriter, r *http.Request) {
 		// closeBtn.Click()
 		page.Close()
 	}
-
-
-
 
 	// Print the events
 	log.Println("Extracted events:")
