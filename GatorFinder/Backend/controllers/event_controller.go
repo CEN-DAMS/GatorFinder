@@ -8,6 +8,9 @@ import (
 	"log"
 	"net/http"
 	"time"
+	"os"
+	//"bufio"
+
 
 	"backend/models" // Ensure correct import path
 
@@ -15,6 +18,7 @@ import (
 	"github.com/playwright-community/playwright-go"
 
 	_ "github.com/mattn/go-sqlite3"
+	_ "golang.org/x/term"
 )
 
 type InstagramData struct {
@@ -370,6 +374,7 @@ func DeleteUser(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {array} models.User
 // @Router /users/getcalender [get]
 func GetCalenderEvents(w http.ResponseWriter, r *http.Request) {
+	password := os.Getenv("IG_PASSWORD")
 	pw, err := playwright.Run()
 	length := 0
 	if err != nil {
@@ -438,6 +443,150 @@ func GetCalenderEvents(w http.ResponseWriter, r *http.Request) {
 		event := []string{summaryValue, time[i], title[i]}
 		events = append(events, event)
 	}
+
+	pw, err = playwright.Run()
+	if err != nil {
+		log.Fatalf("could not launch playwright: %v", err)
+	}
+
+	browser, err = pw.Chromium.Launch(playwright.BrowserTypeLaunchOptions{
+		Headless: playwright.Bool(false), // set to true if you don't want the browser UI
+	})
+	if err != nil {
+		log.Fatalf("could not launch browser: %v", err)
+	}
+
+	context, err = browser.NewContext()
+	if err != nil {
+		log.Fatalf("could not create context: %v", err)
+	}
+	if err != nil {
+		log.Fatalf("could not launch browser: %v", err)
+	}
+	page, err = browser.NewPage()
+	if err != nil {
+		log.Fatalf("could not create page: %v", err)
+	}
+
+	_, err = page.Goto("https://www.instagram.com/accounts/login/")
+	if err != nil {
+		log.Fatalf("could not go to login page: %v", err)
+	}
+	//reader := bufio.NewReader(os.Stdin)
+	// fmt.Print("Enter Instagram password: ")
+	// passwordBytes, err := term.ReadPassword(int(os.Stdin.Fd()))
+	// if err != nil {
+	// 	log.Fatalf("Error reading password: %v", err)
+	// }
+	page.Locator("input[name='username']").Fill("super_secret_meme_account")
+	//page.Locator("input[name='password']").Fill(string(passwordBytes))
+	page.Locator("input[name='password']").Fill(password)
+	page.Locator("button[type='submit']").Click()
+
+	// Wait for navigation to the home page
+	notNowBtn := page.Locator("button:has-text(\"Save info\")")
+	err = notNowBtn.WaitFor()
+	if err == nil {
+		err = notNowBtn.Click()
+		if err != nil {
+			log.Printf("⚠️ Could not click 'Not Now': %v", err)
+		} else {
+			log.Println("🛑 Skipped 'Save Login Info' prompt")
+		}
+	}
+	page.Locator("nav").WaitFor()
+
+	// state, err := context.StorageState()
+	// if err != nil {
+	// 	log.Fatalf("could not get storage state: %v", err)
+	// }
+
+	// //MemePass8!
+
+	// file, err := os.Create("state.json")
+	// if err != nil {
+	// 	log.Fatalf("could not create state.json file: %v", err)
+	// }
+	// defer file.Close()
+
+	// encoder := json.NewEncoder(file)
+	// encoder.SetIndent("", "  ")
+	// err = encoder.Encode(state)
+	// if err != nil {
+	// 	log.Fatalf("could not write storage state to file: %v", err)
+	// }
+
+	// log.Println("✅ Saved login session to state.json")
+
+
+	// Replace with the actual Instagram event page URL
+	url := "https://www.instagram.com/ufgatornights/"
+	_, err = page.Goto(url)
+	if err != nil {
+		log.Fatalf("could not go to page: %v", err)
+	}
+
+	// Wait for posts to load
+	postsLocator := page.Locator("article a").First()
+	//err = postsLocator.WaitFor()
+	// if err == nil {
+	// 	//err = notNowBtn.Click()
+	// 	if err != nil {
+	// 		log.Printf("error", err)
+	// 	} else {
+	// 		log.Println("Success")
+	// 	}
+	// }
+	// postsCount, err := postsLocator.Count()
+	// if err != nil {
+	// 	log.Fatalf("could not count posts: %v", err)
+	// }
+
+	limit := 0
+
+	// if postsCount < limit {
+	// 	limit = postsCount
+	// }
+
+	for i := 0; i < limit; i++ {
+		post := postsLocator.Nth(i)
+		post.Click()
+		// href, err := post.GetAttribute("href")
+		// if err != nil || href == "" {
+		// 	continue
+		// }
+		// postURL := "https://www.instagram.com" + href
+
+		// context, _ := browser.NewContext(playwright.BrowserNewContextOptions{
+		// 	StorageStatePath: playwright.String("state.json"),
+		// })
+		// newPage, _ := context.NewPage()
+		// newPage.Goto(postURL)
+		dialogLocator := page.Locator("article")
+		err = dialogLocator.First().WaitFor()
+		if err != nil {
+			continue
+		}
+
+		// Get description text
+		descLocator := page.Locator("article h1").First() // You might need to refine this selector
+		description, err := descLocator.TextContent()
+		if err != nil || description == "" {
+			description = "No description"
+		}
+
+		// Dummy title and time for now — you can parse from description if you want
+		title := fmt.Sprintf("Event %d", i+1)
+		time := "No Time info"
+
+		events = append(events, []string{description, time, title})
+		// closeBtn := page.Locator("button:has-text(\"Close\")")
+		// closeBtn.Click()
+		page.Close()
+	}
+
+
+
 
 	// Print the events
 	log.Println("Extracted events:")
