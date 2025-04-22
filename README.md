@@ -58,6 +58,6 @@ npm i
 npm start
 
 
-#How to use application:
+# How to use application:
 
 Once the front and back end are running, localhost:3000 should open. You can log in with your ufl.edu email address and continue with a One-Time Password that will currently be displayed in the console. You can then press a button to pull all events in the UF calendar. Additionally, you may add your own event with a time, title, description, and image. Users may also update their information in their profile page
