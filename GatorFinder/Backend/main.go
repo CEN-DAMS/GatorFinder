@@ -3,35 +3,32 @@ package main
 import (
 	_ "backend/docs" // Make sure this path is correct
 	"backend/routes"
-	"database/sql"
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 
-	"github.com/gorilla/mux"
-	"github.com/gorilla/handlers"
 	_ "github.com/aws/aws-sdk-go-v2/config"
-    _ "github.com/aws/aws-sdk-go-v2/feature/rds/auth"
+	_ "github.com/aws/aws-sdk-go-v2/feature/rds/auth"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/gorilla/handlers"
+	"github.com/gorilla/mux"
 
-    //"github.com/gin-contrib/cors"
+	//"github.com/gin-contrib/cors"
 
 	httpSwagger "github.com/swaggo/http-swagger"
 )
 
-
 func main() {
-	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
+	/*db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
 	if err != nil {
 		log.Fatal(err)
 	}
 	defer db.Close()
 	pingErr := db.Ping()
 	if pingErr != nil {
-    	log.Fatal(pingErr)
-  	}
-  	fmt.Println("Connected!")
+		log.Fatal(pingErr)
+	}
+	fmt.Println("Connected!")
 	// _, err = db.Exec("CREATE DATABASE test")
 	// if err != nil {
 	// 	log.Fatal(err)
@@ -71,22 +68,24 @@ func main() {
 		log.Fatal(err)
 	}
 
-
-
 	var version string
 	err = db.QueryRow("SELECT VERSION()").Scan(&version)
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Println(version)
+	*/
+
 	StartServer()
 }
+
 func StartServer() {
 	router := mux.NewRouter()
 
 	// Register API Routes
 	routes.RegisterEventRoutes(router)
 	routes.RegisterUserRoutes(router)
+	routes.RegisterRoutes(router)
+	routes.RegisterLoginRoutes(router)
 
 	// Swagger UI route
 	router.PathPrefix("/swagger/").Handler(httpSwagger.WrapHandler)
