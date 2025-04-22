@@ -31,10 +31,6 @@ Cypress Tests:
 
 
 Back End Documentation:
-Below is a self‑contained Markdown reference you can include (e.g. as `CONTROLLERS_API.md`) in your repo to document all of your current controller endpoints.
-
----
-
 # Events & Users API Reference
 
 A collection of HTTP handlers for managing events, users, and scraping UF calendar/Instagram posts. All endpoints return JSON and assume you’re running over HTTPS in production.
