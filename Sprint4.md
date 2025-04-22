@@ -466,3 +466,51 @@ func CreateOtphandler(…)
 // @Router /login/verifyOtp [get]
 func VerifyOtpHandler(…)
 ```
+
+
+Unit test for backend
+
+Overview  
+This controllers test suite verifies HTTP handlers in the Gin-based backend, ensuring that event- and user-related endpoints behave correctly and that utility functions (like base64 decoding) work as expected. It uses Go’s testing package for structuring tests and the net/http/httptest package to simulate HTTP requests and responses. A test database connection is established via database/sql before routes are exercised in test mode.
+
+Dependencies  
+Imports and their purposes:  
+- bytes: build in-memory request bodies  
+- database/sql: open and manage the test DB connection  
+- encoding/json: serialize and deserialize JSON payloads  
+- fmt: formatted I/O for logging and test setup messages  
+- log: fatal errors during DB connection setup  
+- net/http: define HTTP status codes and request types  
+- net/http/httptest: create test servers and recorders  
+- testing: test framework (TestXxx functions and assertions)  
+- github.com/gin-gonic/gin: configure Gin in test mode and route handlers  
+- github.com/go-sql-driver/mysql: MySQL driver for database/sql connection  
+- backend/models: application data structures (Event, User, etc.)
+
+Test Setup  
+The init function calls setupTestDB to open a MySQL test database using sql.Open, logs a fatal error on failure, and sets Gin to TestMode (disabling logging and recovery middleware). setupTestDB returns a *sql.DB ready for use by handler functions.
+
+Test Cases  
+TestAddEvent:  
+Purpose is to ensure POST /events/add accepts a valid Event JSON and returns 200 OK. It marshals a dummy Event, builds an HTTP request, uses httptest.NewRecorder, invokes AddEvent handler directly, and checks for a 200 status code.
+
+TestGetEvent:  
+Purpose is to verify GET /events/get returns 200 OK and a list of events. It creates a GET request, uses a recorder, calls GetEvent, and asserts on the status code, logging the response body on failure.
+
+TestGetUsers:  
+Purpose is to confirm GET /users/get returns 200 OK with a user list. It follows the same pattern as TestGetEvent.
+
+TestDecodeBase64:  
+Purpose is to validate the helper function decodeBase64. In the valid case, the string “aGVsbG8gd29ybGQ=” decodes to “hello world.” In the invalid case, “###INVALID###” returns an error. It uses Go’s encoding/base64 package.
+
+TestAddUserFailed:  
+Purpose is to ensure the AddUser handler gracefully handles database insertion errors by returning a 500 Internal Server Error. It posts invalid or conflicting payloads and expects a 500 status code.
+
+TestDeleteUser (and variants):  
+Purpose is to check DELETE /users/delete?id=<id> returns 200 OK even if the user does not exist. Edge cases include missing id (expect 400 Bad Request), non-numeric or empty id (expect 400 or 500 depending on query-parsing logic).
+
+Running the Tests  
+Navigate to the controllers directory and run “go test -v”. This executes all *_test.go files and functions named TestXxx.
+
+Summary of Coverage  
+This suite covers HTTP endpoints for events and users (add, get, delete) as well as utility logic for Base64 decoding, ensuring both successful responses and error handling paths are validated.
