@@ -16,6 +16,7 @@ import HomeIcon from '@mui/icons-material/Home';
 import UploadIcon from '@mui/icons-material/Upload';
 import axios from 'axios';
 
+
 const Profile = () => {
   const [profileData, setProfileData] = useState({
     username: 'gatorUser123',
@@ -23,6 +24,7 @@ const Profile = () => {
     role: 'Student',
     bio: '',
     image: null,
+    birthday: '',
   });
 
   const handleChange = (field) => (e) => {
@@ -53,7 +55,7 @@ const Profile = () => {
 
   return (
     <>
-      <AppBar position="static" sx={{ backgroundColor: '#ff9800' }}>
+      <AppBar position="static" sx={{ background: 'linear-gradient(45deg, #ff9800 30%, #ffb300 90%)', boxShadow: 4 }}>
         <Toolbar>
           <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
             <Typography
@@ -125,6 +127,14 @@ const Profile = () => {
             type="email"
             value={profileData.email}
             onChange={handleChange('email')}
+          />
+          <TextField
+            fullWidth
+            label="Birthday"
+            type="date"
+            InputLabelProps={{ shrink: true }}
+            value={profileData.birthday}
+            onChange={handleChange('birthday')}
           />
           <TextField
             fullWidth

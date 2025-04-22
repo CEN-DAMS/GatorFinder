@@ -38,7 +38,15 @@ const Home = () => {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [rawEventData, setRawEventData] = useState(null);
   const [showDebug, setShowDebug] = useState(false);
+  const [attendingMap, setAttendingMap] = useState({});
 
+  const toggleAttendance = (index) => {
+    setAttendingMap((prev) => ({
+      ...prev,
+      [index]: !prev[index],
+    }));
+  };
+  
   const [newEvent, setNewEvent] = useState({
     uid: 1,
     username: "temp",
@@ -204,7 +212,15 @@ const Home = () => {
               borderBottom: '1px solid #e0e0e0'
             }}
           />
-          <CardContent>
+          <CardContent
+             sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              height: '100%',
+              pb: 2
+            }}
+          >
+              <Box sx={{ flexGrow: 1 }}>
             <Typography variant="body1" sx={{ mb: 2 }}>
               {description || 'No description available'}
             </Typography>
@@ -221,7 +237,7 @@ const Home = () => {
               )}
             </Box>
             {event.image && (
-      <Box sx={{ mt: 2 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', pt: 2 }}>
         <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1 }}>
           Event Image:
         </Typography>
@@ -237,6 +253,17 @@ const Home = () => {
         />
       </Box>
             )}
+          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 'auto' }}>
+          <Button
+            variant="contained"
+            color={attendingMap[index] ? 'success' : 'primary'}
+            onClick={() => toggleAttendance(index)}
+            sx={{ textTransform: 'none' }}
+          >
+            {attendingMap[index] ? 'Attending' : 'Sign up'}
+          </Button>
+        </Box>
+        </Box>
               </CardContent>
         </Card>
       );
@@ -275,7 +302,7 @@ const Home = () => {
 
   return (
     <>
-      <AppBar position="static" sx={{ backgroundColor: '#ff9800' }}>
+      <AppBar position="static" sx={{ background: 'linear-gradient(45deg, #ff9800 30%, #ffb300 90%)', boxShadow: 4  }}>
         <Toolbar>
           <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
             <Typography

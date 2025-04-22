@@ -1,0 +1,452 @@
+Sprint4.md
+
+- Work done in Sprint 4
+- Add login via OTP
+- Add scrapper to fetch events from UF calender
+
+
+
+Front End:
+
+Unit tests:
+
+Cypress tests:
+
+
+
+Back End Documentation:
+Below is a self‑contained Markdown reference you can include (e.g. as `CONTROLLERS_API.md`) in your repo to document all of your current controller endpoints.
+
+---
+
+# Events & Users API Reference
+
+A collection of HTTP handlers for managing events, users, and scraping UF calendar/Instagram posts. All endpoints return JSON and assume you’re running over HTTPS in production.
+
+> **⚠️ Security & Scalability Notes**  
+> - Currently uses plain-text passwords and a single global DB connection string—avoid this in production.  
+> - No authentication/authorization is enforced.  
+> - Long‑running Playwright scrapes block the HTTP handler; consider a background job or caching layer.  
+> - Always validate and sanitize inputs before SQL execution to prevent injection.
+
+---
+
+## Common Utilities
+
+```go
+// decodeBase64 decodes a Base64-encoded string.
+func decodeBase64(encodedString string) (string, error)
+// Dictionary is a simple map[string]string alias for JSON blobs.
+type Dictionary map[string]string
+// RecipeSpecs & Recipe types are declared but not exposed via HTTP.
+type RecipeSpecs struct { … }
+type Recipe struct { … }
+```
+
+---
+
+## 1. Add Event
+
+```
+POST  /events/add
+```
+
+- **Swagger Annotations**
+
+  ```go
+  // @Summary Add a new event
+  // @Description Adds a new event to the system
+  // @Tags Events
+  // @Accept json
+  // @Produce json
+  // @Param event body models.Event true "Event Data"
+  // @Success 200 {object} map[string]string
+  // @Router /events/add [post]
+  ```
+
+- **Request Body** (`models.Event`)
+  
+  ```jsonc
+  {
+    "User": "alice",
+    "EventName": "Study Group",
+    "EventDescription": "Weekly HCI discussion",
+    "DatePosted": "2025-04-21",
+    "StartDate": "2025-04-25",
+    "EndDate": "2025-04-25",
+    "StartTime": "18:00",
+    "EndTime": "20:00",
+    "ImageURL": "https://example.com/pic.jpg"
+  }
+  ```
+
+- **Responses**
+  - `200 OK`  
+    ```json
+    { "message": "Event received successfully" }
+    ```
+  - `400 Bad Request` for invalid JSON
+  - `500 Internal Server Error` for DB failures
+
+---
+
+## 2. Get Events
+
+```
+GET  /events/get
+```
+
+- **Swagger Annotations**
+
+  ```go
+  // @Summary Get event details
+  // @Description Retrieves event details from the system
+  // @Tags Events
+  // @Accept json
+  // @Produce json
+  // @Success 200 {array} map[string]interface{}
+  // @Router /events/get [get]
+  ```
+
+- **Response**
+
+  - `200 OK` returns an array of rows, each as a map of column→value.  
+    ```json
+    [
+      {
+        "uid": "1",
+        "username": "alice",
+        "eventname": "Study Group",
+        … other columns …
+      },
+      …
+    ]
+    ```
+  - `500 Internal Server Error` on DB failures
+
+---
+
+## 3. Delete Event
+
+```
+DELETE  /events/delete?id={id}
+```
+
+- **Swagger Annotations**
+
+  ```go
+  // @Summary Delete an event
+  // @Description Deletes an event from the system by ID
+  // @Tags Events
+  // @Accept json
+  // @Produce json
+  // @Param id query int true "Event ID"
+  // @Success 200 {object} map[string]string
+  // @Router /events/delete [delete]
+  ```
+
+- **Query Parameters**
+  - `id` (integer, required): the `uid` of the event
+
+- **Responses**
+  - `200 OK`  
+    ```json
+    { "message": "Event received successfully" }
+    ```
+  - `400 Bad Request` if `id` missing
+  - `500 Internal Server Error` on DB errors
+
+---
+
+## 4. Add User
+
+```
+POST  /users/add
+```
+
+- **Swagger Annotations**
+
+  ```go
+  // @Summary Add a new User
+  // @Description Adds a new User to the system
+  // @Tags Users
+  // @Accept json
+  // @Produce json
+  // @Param event body models.User true "User Data"
+  // @Success 200 {object} map[string]string
+  // @Router /users/add [post]
+  ```
+
+- **Request Body** (`models.User`)
+  
+  ```jsonc
+  {
+    "Username": "alice",
+    "Email": "alice@example.com",
+    "Password": "plaintext123"
+  }
+  ```
+
+- **Responses**
+  - `200 OK`  
+    ```json
+    { "message": "User received successfully" }
+    ```
+  - `400 Bad Request` for invalid JSON
+  - `500 Internal Server Error` for DB failures
+
+---
+
+## 5. Get Users
+
+```
+GET  /users/get
+```
+
+- **Swagger Annotations**
+
+  ```go
+  // @Summary Get user details
+  // @Description Retrieves user details from the system
+  // @Tags Users
+  // @Accept json
+  // @Produce json
+  // @Success 200 {array} map[string]interface{}
+  // @Router /users/get [get]
+  ```
+
+- **Response**
+
+  - `200 OK` returns an array of user records as maps:
+    ```json
+    [
+      { "uid":"1", "username":"alice", "email":"alice@example.com" },
+      …
+    ]
+    ```
+  - `500 Internal Server Error` on DB failures
+
+---
+
+## 6. Delete User
+
+```
+DELETE  /users/delete?id={id}
+```
+
+- **Swagger Annotations**
+
+  ```go
+  // @Summary Delete a User
+  // @Description Deletes a User from the system by ID
+  // @Tags Users
+  // @Accept json
+  // @Produce json
+  // @Param id query int true "User ID"
+  // @Success 200 {object} map[string]string
+  // @Router /users/delete [delete]
+  ```
+
+- **Query Parameters**
+  - `id` (integer, required): the `uid` of the user
+
+- **Responses**
+  - `200 OK`  
+    ```json
+    { "message": "User received successfully" }
+    ```
+  - `400 Bad Request` if `id` missing
+  - `500 Internal Server Error` on DB errors
+
+---
+
+## 7. Get Calendar & Instagram Events
+
+```
+GET  /users/getcalender
+```
+
+- **Swagger Annotations**
+
+  ```go
+  // @Summary Get scrape details
+  // @Description Retrieves calendar events from the UF calendar and Instagram
+  // @Tags Users
+  // @Accept json
+  // @Produce json
+  // @Success 200 {array} []string
+  // @Router /users/getcalender [get]
+  ```
+
+- **Behavior**
+  1. Launches Playwright in headless mode
+  2. Scrapes today’s UF calendar (`.lw_events_summary`, `.lw_events_time`, `.lw_events_title`)
+  3. Re-launches Playwright (non‑headless) to log into Instagram using `IG_PASSWORD` env var
+  4. Visits the target profile and collects post descriptions as dummy “events”
+  5. Returns a combined `[][]string` of `[summary, time, title]` or `[description, time, title]` per item
+
+- **Response**
+  - `200 OK`  
+    ```json
+    [
+      ["Lecture: AI Ethics", "10:00 AM", "AI Seminar"],
+      ["No description", "No Time info", "Event 1"],
+      …
+    ]
+    ```
+
+
+
+# OTP Authentication Service
+
+A simple in‑memory one‑time‑password (OTP) microservice with two endpoints:
+
+- Request OTP: generates and “sends” a 6‑digit code to the user’s email (stubbed).
+- Verify OTP: checks the code provided against the most recently generated one.
+
+>  Note: This implementation stores a single global OTP in memory (`correctOTP`) and is intended for demonstration only. In production, you would persist OTPs per‑user (e.g. in Redis or your database), enforce expiration, rate‑limit requests, and secure the transport channel (HTTPS).
+
+---
+
+## Common Types
+
+```go
+// VerifyOTPResponse is the JSON response for verification attempts.
+type VerifyOTPResponse struct {
+    Message string `json:"message"`
+}
+```
+
+---
+
+## 1. Request OTP
+
+```
+GET  /login/requestOtp?email={email}
+```
+
+- **Query Parameters**
+  - `email` (string, required): user’s email or identifier
+
+- **Response Codes**
+  - `200 OK`  
+    - Body: `{ "message":"OTP sent successfully" }`
+  - `400 Bad Request`  
+    - Missing or empty `email` parameter  
+    - Body: plain-text error
+
+- **Behavior**
+  1. Generates a random 6‑digit code.
+  2. Stores it in memory (`correctOTP`).
+  3. Logs it to stdout (for demo).
+  4. Calls `sendEmail(email, otp)` (stub).
+
+- **Example Request**
+
+    ```bash
+    curl "http://localhost:8080/login/requestOtp?email=user@example.com"
+    ```
+
+- **Example Console Log**
+
+    ```
+    Generated OTP for user@example.com: 482915
+    ```
+
+- **Example Response**
+
+    ```json
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+
+    {"message":"OTP sent successfully"}
+    ```
+
+---
+
+## 2. Verify OTP
+
+```
+GET  /login/verifyOtp?otp={otp}
+```
+
+- **Query Parameters**
+  - `otp` (string, required): the 6‑digit code to verify
+
+- **Response Codes**
+  - `200 OK`  
+    - Valid code  
+    - Body:  
+      ```json
+      { "message": "OTP verified successfully" }
+      ```
+  - `400 Bad Request`  
+    - Missing or empty `otp` parameter  
+    - Body: plain-text error (“OTP is required”)
+  - `401 Unauthorized`  
+    - Code does not match  
+    - Body:  
+      ```json
+      { "message": "Invalid OTP" }
+      ```
+
+- **Behavior**
+  1. Reads `otp` from the query string.
+  2. Returns **400** if missing.
+  3. Compares against `correctOTP`.
+  4. Returns **200** if equal; **401** otherwise.
+
+- **Example Request**
+
+    ```bash
+    curl "http://localhost:8080/login/verifyOtp?otp=482915"
+    ```
+
+- **Example Successful Response**
+
+    ```json
+    HTTP/1.1 200 OK
+    Content-Type: application/json
+
+    { "message": "OTP verified successfully" }
+    ```
+
+- **Example Failure Response (wrong code)**
+
+    ```json
+    HTTP/1.1 401 Unauthorized
+    Content-Type: application/json
+
+    { "message": "Invalid OTP" }
+    ```
+
+---
+
+## Swagger Annotations
+
+These already appear atop your handlers to generate OpenAPI specs:
+
+```go
+// @Summary Request OTP
+// @Description Generates and sends OTP to the user
+// @Tags OTP
+// @Accept json
+// @Produce json
+// @Param email query string true "Email or User Identifier" example("user@example.com")
+// @Success 200 {object} map[string]string "OTP sent successfully"
+// @Failure 400 {object} map[string]string "Missing or invalid parameters"
+// @Router /login/requestOtp [get]
+func CreateOtphandler(…)
+
+// @Summary Verify OTP
+// @Description Verifies the OTP provided by the user
+// @Tags OTP
+// @Accept json
+// @Produce json
+// @Param otp query string true "OTP" example("123456")
+// @Success 200 {object} VerifyOTPResponse "OTP verification success"
+// @Failure 400 {object} VerifyOTPResponse "OTP is required"
+// @Failure 401 {object} VerifyOTPResponse "Invalid OTP"
+// @Router /login/verifyOtp [get]
+func VerifyOtpHandler(…)
+```
