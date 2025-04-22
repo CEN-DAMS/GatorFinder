@@ -7,6 +7,10 @@ Sprint4.md
 
 
 Front End:
+  -Added functionality to save profile to the backend.
+  -Added functionality to sign-up to an event, which updates to attending. 
+  -Added OTP functionality for secure login
+  -Ensures only emails ending in @ufl.edu are able to obtain an OTP
 
 Unit tests:
 
