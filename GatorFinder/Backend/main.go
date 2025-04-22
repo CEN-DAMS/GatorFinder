@@ -84,6 +84,7 @@ func StartServer() {
 	// Register API Routes
 	routes.RegisterEventRoutes(router)
 	routes.RegisterUserRoutes(router)
+	routes.RegisterRoutes(router)
 	routes.RegisterLoginRoutes(router)
 
 	// Swagger UI route

@@ -14,6 +14,8 @@ import {
 } from '@mui/material';
 import HomeIcon from '@mui/icons-material/Home';
 import UploadIcon from '@mui/icons-material/Upload';
+import axios from 'axios';
+
 
 const Profile = () => {
   const [profileData, setProfileData] = useState({
@@ -22,6 +24,7 @@ const Profile = () => {
     role: 'Student',
     bio: '',
     image: null,
+    birthday: '',
   });
 
   const handleChange = (field) => (e) => {
@@ -36,9 +39,23 @@ const Profile = () => {
     }
   };
 
+  const handleSave = async () => {
+    try {
+      const response = await axios.put('http://localhost:8080/api/user/profile', profileData, {
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      });
+      alert('Profile saved successfully!');
+    } catch (error) {
+      console.error('Error saving profile:', error);
+      alert('Failed to save profile.');
+    }
+  };  
+
   return (
     <>
-      <AppBar position="static" sx={{ backgroundColor: '#ff9800' }}>
+      <AppBar position="static" sx={{ background: 'linear-gradient(45deg, #ff9800 30%, #ffb300 90%)', boxShadow: 4 }}>
         <Toolbar>
           <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1 }}>
             <Typography
@@ -113,6 +130,14 @@ const Profile = () => {
           />
           <TextField
             fullWidth
+            label="Birthday"
+            type="date"
+            InputLabelProps={{ shrink: true }}
+            value={profileData.birthday}
+            onChange={handleChange('birthday')}
+          />
+          <TextField
+            fullWidth
             label="Role"
             value={profileData.role}
             onChange={handleChange('role')}
@@ -125,10 +150,10 @@ const Profile = () => {
             rows={3}
             onChange={handleChange('bio')}
           />
-
           <Button
             variant="contained"
             sx={{ mt: 2, textTransform: 'none' }}
+            onClick={handleSave}
           >
             Save Changes
           </Button>
