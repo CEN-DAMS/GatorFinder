@@ -514,3 +514,33 @@ Navigate to the controllers directory and run “go test -v”. This executes al
 
 Summary of Coverage  
 This suite covers HTTP endpoints for events and users (add, get, delete) as well as utility logic for Base64 decoding, ensuring both successful responses and error handling paths are validated.
+
+Overview  
+This test suite uses Go’s built‑in testing framework together with Gin’s HTTP router and the Testify assertion library to verify simple API endpoints. It defines a helper function to create a Gin engine with predefined routes, then exercises those GET and POST routes using httptest recorders. Each test ensures the correct HTTP status code and response body content.  
+
+Dependencies  
+The suite imports the following packages:  
+• “github.com/gin-gonic/gin” for setting up the router and registering handlers.  
+• “net/http” for HTTP status codes and request construction.  
+• “net/http/httptest” to create in‑memory HTTP recorders and simulate requests.  
+• “testing” to structure the tests as TestXxx functions using Go’s standard test runner.  
+• “github.com/stretchr/testify/assert” to provide easy‑to‑read assertions like Equal and Contains.  
+
+Test Setup  
+A helper function called setupRouter returns a *gin.Engine. It calls gin.Default() to create a new router, registers a GET route at /api/message that responds with JSON `{"message":"Hello from Go!"}`, and then returns the configured router.  
+
+Test Cases  
+TestMessageEndpoint  
+This test calls setupRouter, builds an HTTP GET request to /api/message, and records the response. It asserts that the status code is 200 (http.StatusOK) and that the response body contains the text “Hello from Go!”.  
+
+TestCreateItem  
+This test creates a new Gin router inline, registers a POST route at /api/item that responds with status code 201 (http.StatusCreated) and JSON `{"status":"Item created"}`, then sends an empty POST request to that route. It asserts a 201 status code and that the response body includes “Item created”.  
+
+TestGetItem  
+Currently duplicating the behavior of TestCreateItem, this test again registers the same POST /api/item handler, sends a POST request, and checks for the same 201 status and response content. It can be renamed or adjusted later to test a GET endpoint once implemented.  
+
+Running the Tests  
+Run all tests in this package by executing `go test -v`. The -v flag enables verbose output, listing each test’s name and whether it passed.  
+
+Summary  
+By combining Gin in test mode, httptest for HTTP simulation, and Testify for clear assertions, this suite provides a straightforward pattern for testing REST endpoints. Additional tests can be added following the same structure: register a route on a router, build a request, serve it with ServeHTTP, and assert on the recorder’s Code and Body.
