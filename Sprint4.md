@@ -8,9 +8,21 @@ Sprint4.md
 
 Front End:
 
-Unit tests:
+Unit Tests:
+- Test 1: "renders GatorFinder logo": tests to make sure the logo of the website is visible on the home page.
+- Test 2: "non ufl email login attempt": tests to make sure that non ufl email addresses cannot login.
+- Test 3: "valid ufl email login attempt": tests to make sure that valid ufl email addresses can login.
+- Test 4: "navigates from Signup to Login page": tests to make sure the login page can be navigated from the sign up page.
+- Test 5: "navigates to profile": tests to make sure that the profile page can be navigated to.
 
-Cypress tests:
+
+Cypress Tests: 
+- Test 1: "validlogin.cy.js" : tests to make sure that only ufl email addresses can login.
+- Test 2: "searchbar.cy.js" : tests event search via the search bar.
+- Test 3: "signup.cy.js" : tests sign up functionality and navigates to log in page.
+- Test 4: "create_event.cy.js" : tests creating an eventing and make sure it is displayed.
+- Test 5: "create_profile.cy.js": tests to make sure that profile page can be navigated to.
+- Test 6: "invalidlogin.cy.js": tests to make sure that non ufl email addresses cannot login.
 
 
 
