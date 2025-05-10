@@ -17,6 +17,7 @@ import (
 
 var testRouter *gin.Engine
 
+// Initialize the test router and setup the test database
 func init() {
 	fmt.Println("Setting up test router")
 	gin.SetMode(gin.TestMode)
@@ -24,7 +25,7 @@ func init() {
 	testRouter = gin.Default()
 }
 
-// Setup test database
+// Setup test database connection (used only for testing)
 func setupTestDB() *sql.DB {
 	db, err := sql.Open("mysql", "admin:CEN5035root@tcp(database.ctyws6uk8z2y.us-east-2.rds.amazonaws.com:3306)/test")
 	if err != nil {
@@ -33,7 +34,7 @@ func setupTestDB() *sql.DB {
 	return db
 }
 
-// Test AddEvent
+// Test for adding an event using POST /events/add
 func TestAddEvent(t *testing.T) {
 	event := models.Event{
 		User:             "testUser",
@@ -60,7 +61,7 @@ func TestAddEvent(t *testing.T) {
 	}
 }
 
-// Test GetEvent
+// Test for fetching events using GET /events/get
 func TestGetEvent(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/events/get", nil)
 	rr := httptest.NewRecorder()
@@ -73,9 +74,7 @@ func TestGetEvent(t *testing.T) {
 	}
 }
 
-// Test AddUser
-
-// Test GetUsers
+// Test for fetching users using GET /users/get
 func TestGetUsers(t *testing.T) {
 	req, _ := http.NewRequest("GET", "/users/get", nil)
 	rr := httptest.NewRecorder()
@@ -87,7 +86,7 @@ func TestGetUsers(t *testing.T) {
 	}
 }
 
-// Test DecodeBase64
+// Test for decoding base64 string
 func TestDecodeBase64(t *testing.T) {
 	// Valid case
 	encoded := "aGVsbG8gd29ybGQ=" // "hello world"
@@ -109,59 +108,52 @@ func TestDecodeBase64(t *testing.T) {
 	}
 }
 
-// Assume decodeBase64 is defined in the same package if not imported
+// Test for AddUser handler expecting failure (internal server error)
 func TestAddUserFailed(t *testing.T) {
-	// Create test user data
 	user := models.User{
 		Username: "testuser",
 		Email:    "test@example.com",
 		Password: "password123",
 	}
 
-	// Convert to JSON
 	jsonData, err := json.Marshal(user)
 	if err != nil {
 		t.Fatalf("Failed to marshal user data: %v", err)
 	}
 
-	// Create the HTTP request
 	req, err := http.NewRequest("POST", "/users/add", bytes.NewBuffer(jsonData))
 	if err != nil {
 		t.Fatalf("Failed to create HTTP request: %v", err)
 	}
 	req.Header.Set("Content-Type", "application/json")
 
-	// Use httptest to record the response
 	rr := httptest.NewRecorder()
-
-	// Directly use the handler (if you're not using Gin router)
 	handler := http.HandlerFunc(AddUser)
 	handler.ServeHTTP(rr, req)
 
-	// Expect 200 OK
 	if rr.Code != http.StatusInternalServerError {
 		t.Errorf("Expected status 500, got %d", rr.Code)
-		t.Logf("Response body: %s", rr.Body.String()) // Log the response body for debugging
+		t.Logf("Response body: %s", rr.Body.String())
 	}
 }
+
+// Test for deleting a user with a valid (existing) user ID
 func TestDeleteUser(t *testing.T) {
-	// Construct the request with a dummy user ID (make sure this ID exists in your DB)
 	req, err := http.NewRequest("DELETE", "/users/delete?id=123", nil)
 	if err != nil {
 		t.Fatalf("Could not create request: %v", err)
 	}
 
 	rr := httptest.NewRecorder()
-
-	// Directly call the DeleteUser handler
 	DeleteUser(rr, req)
 
-	// Check status code
 	if rr.Code != http.StatusOK {
 		t.Errorf("Expected status 200, got %d", rr.Code)
 		t.Logf("Response body: %s", rr.Body.String())
 	}
 }
+
+// Test for deleting a user when ID is missing in query parameters
 func TestDeleteUser_MissingID(t *testing.T) {
 	req, err := http.NewRequest("DELETE", "/users/delete", nil)
 	if err != nil {
@@ -176,8 +168,10 @@ func TestDeleteUser_MissingID(t *testing.T) {
 		t.Logf("Response body: %s", rr.Body.String())
 	}
 }
+
+// Test for deleting a non-existent user ID
 func TestDeleteUser_NonExistentID(t *testing.T) {
-	req, err := http.NewRequest("DELETE", "/users/delete?id=999999", nil) // assuming 999999 doesn't exist
+	req, err := http.NewRequest("DELETE", "/users/delete?id=999999", nil)
 	if err != nil {
 		t.Fatalf("Could not create request: %v", err)
 	}
@@ -190,8 +184,10 @@ func TestDeleteUser_NonExistentID(t *testing.T) {
 		t.Logf("Response body: %s", rr.Body.String())
 	}
 }
+
+// Test for deleting a user with an invalid (empty) ID
 func TestDeleteUser_InvalidID(t *testing.T) {
-	req, err := http.NewRequest("DELETE", "/users/delete?id=", nil) // ID should be numeric
+	req, err := http.NewRequest("DELETE", "/users/delete?id=", nil)
 	if err != nil {
 		t.Fatalf("Could not create request: %v", err)
 	}
